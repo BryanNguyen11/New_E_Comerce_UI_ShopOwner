@@ -1,56 +1,50 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import VoucherDetailView from "./VoucherDetailView";
 import VoucherView from "./VoucherView";
+import { useAuth } from "@/context/AuthContext";
 
 export default function VoucherManagement() {
-  const [vouchers, setVouchers] = useState([
-    {
-      id: 1,
-      name: "Giảm giá 10%",
-      code: "SALE10",
-      startDate: "2025-05-01",
-      endDate: "2025-05-31",
-      discountType: "percentage",
-      discountValue: 10,
-      minOrderValue: 100000,
-      maxUsage: 100,
-      maxUsagePerUser: 1,
-      totalUsed: 50,
-    },
-    {
-      id: 2,
-      name: "Giảm giá mùa hè",
-      code: "SUMMER25",
-      startDate: "2025-06-01",
-      endDate: "2025-08-31",
-      discountType: "percentage",
-      discountValue: 25,
-      minOrderValue: 200000,
-      maxUsage: 200,
-      maxUsagePerUser: 1,
-      totalUsed: 75,
-    },
-    {
-      id: 3,
-      name: "Flash Sale",
-      code: "FLASH50",
-      startDate: "2025-05-15",
-      endDate: "2025-05-16",
-      discountType: "percentage",
-      discountValue: 50,
-      minOrderValue: 300000,
-      maxUsage: 50,
-      maxUsagePerUser: 1,
-      totalUsed: 40,
-    }
-  ]);
+  const [vouchers, setVouchers] = useState([]);
+  const { user, authState } = useAuth();
+  const authToken = authState.token;
+
 
   // State để theo dõi voucher được chọn
   const [selectedVoucherId, setSelectedVoucherId] = useState(null);
   // State để kiểm soát hiển thị popup
   const [isPopupOpen, setIsPopupOpen] = useState(false);
+
+  useEffect(() => {
+    const fetchVouchers = async () => {
+      // Giả lập API call
+      if (!user) {
+        console.log("Chưa có người dùng, không thể gọi API");
+        return;
+      }
+      // cai nay se vao trong phan pages/api/....
+      const url = new URL("/api/vouchers/vendor/" + user.userId, window.location.origin);
+      url.searchParams.append("page", 0);
+      url.searchParams.append("size", 10);
+      console.log("URL:", url.toString());
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      const data = await response.json();
+      if (!response.ok) {
+        console.error("Lỗi khi gọi API:", data);
+        return;
+      }
+      console.log("Dữ liệu từ API:", data);
+      setVouchers(data);
+    }
+    fetchVouchers();
+  }, [user, authToken]);
 
   const handleDelete = (id) => {
     setVouchers(vouchers.filter((voucher) => voucher.id !== id));
@@ -59,9 +53,9 @@ export default function VoucherManagement() {
   const getMostUsedVoucher = () => {
     return vouchers.reduce((max, voucher) => (voucher.totalUsed > max.totalUsed ? voucher : max), vouchers[0]);
   };
-
   const mostUsedVoucher = getMostUsedVoucher();
-  
+
+
   // Hàm xử lý khi click vào voucher
   const handleVoucherClick = (voucherId) => {
     setSelectedVoucherId(voucherId);
@@ -84,7 +78,7 @@ export default function VoucherManagement() {
   // Hàm xử lý khi tạo mã giảm giá mới
   const handleCreateVoucher = (newVoucher) => {
     console.log("Voucher từ API:", newVoucher);
-    
+
     // Chuyển đổi từ cấu trúc API sang cấu trúc component
     const maxId = Math.max(...vouchers.map(v => v.id), 0);
     const voucherToAdd = {
@@ -94,14 +88,14 @@ export default function VoucherManagement() {
       startDate: newVoucher.startDate ? new Date(newVoucher.startDate).toLocaleDateString() : "",
       endDate: newVoucher.endDate ? new Date(newVoucher.endDate).toLocaleDateString() : "",
       discountType: newVoucher.voucherType === "PERCENT" ? "percentage" : "amount",
-      discountValue: newVoucher.voucherType === "PERCENT" ? 
+      discountValue: newVoucher.voucherType === "PERCENT" ?
         Number(newVoucher.percentDiscount) : Number(newVoucher.valueDiscount || 0),
       minOrderValue: Number(newVoucher.minPriceRequired || 0),
       maxUsage: Number(newVoucher.usesCount || 0),
       maxUsagePerUser: 1,
       totalUsed: 0 // Mã mới nên chưa có lượt sử dụng
     };
-    
+
     console.log("Voucher đã chuyển đổi:", voucherToAdd);
     setVouchers([...vouchers, voucherToAdd]);
     setIsPopupOpen(false); // Đóng popup sau khi tạo
@@ -117,7 +111,7 @@ export default function VoucherManagement() {
           {/* Search and Summary Section */}
           <div className="flex items-center justify-between mb-6">
             <div className="flex items-center gap-4">
-              <button 
+              <button
                 className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
                 onClick={handleOpenPopup}
               >
@@ -141,8 +135,8 @@ export default function VoucherManagement() {
             </div>
             <div className="bg-white p-4 rounded shadow">
               <p className="text-sm font-medium text-black">Mã giảm giá được sử dụng nhiều nhất</p>
-              <p className="text-2xl font-bold text-purple-500">{mostUsedVoucher.name}</p>
-              <p className="text-xs text-black">{mostUsedVoucher.totalUsed} lần</p>
+              <p className="text-2xl font-bold text-purple-500">{mostUsedVoucher?.name || ""}</p>
+              <p className="text-xs text-black">{mostUsedVoucher?.totalUsed || ""} lần</p>
             </div>
             <div className="bg-white p-4 rounded shadow">
               <p className="text-sm font-medium text-black">Mã giảm giá sắp hết hạn</p>
@@ -167,30 +161,30 @@ export default function VoucherManagement() {
               </thead>
               <tbody>
                 {vouchers.map((voucher) => (
-                  <tr 
-                    key={voucher.id} 
+                  <tr
+                    key={voucher.voucherId}
                     className="border-t hover:bg-blue-50 transition cursor-pointer"
-                    onClick={() => handleVoucherClick(voucher.id)}
+                    onClick={() => handleVoucherClick(voucher.voucherId)}
                   >
-                    <td className="px-4 py-3 border-b text-black font-medium">{voucher.name}</td>
-                    <td className="px-4 py-3 border-b text-black">{voucher.code}</td>
+                    <td className="px-4 py-3 border-b text-black font-medium">{voucher.voucherName}</td>
+                    <td className="px-4 py-3 border-b text-black">{voucher.voucherId}</td>
                     <td className="px-4 py-3 border-b text-black">
                       {voucher.startDate} - {voucher.endDate}
                     </td>
                     <td className="px-4 py-3 border-b text-black">
-                      {voucher.discountType === "percentage" ? "Giảm %" : "Giảm tiền"}
-                    </td>                    
-                    <td className="px-4 py-3 border-b text-black">
-                      {voucher.discountType === "percentage"
-                        ? `${voucher.discountValue || 0}%`
-                        : `${(voucher.discountValue || 0).toLocaleString()} VND`}
+                      {voucher.voucherType === "PERCENT" ? "Giảm %" : "Giảm tiền"}
                     </td>
-                    <td className="px-4 py-3 border-b text-black text-center">{voucher.totalUsed}</td>
+                    <td className="px-4 py-3 border-b text-black">
+                      {voucher.voucherType === "PERCENT"
+                        ? `${voucher.percentDiscount || 0}%`
+                        : `${(voucher.valueDiscount || 0).toLocaleString()} VND`}
+                    </td>
+                    <td className="px-4 py-3 border-b text-black text-center">{voucher.usesCount}</td>
                     <td className="px-4 py-3 border-b text-black text-center">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
-                          handleDelete(voucher.id);
+                          handleDelete(voucher.voucherId);
                         }}
                         className="text-red-500 hover:underline font-medium"
                       >
@@ -207,8 +201,8 @@ export default function VoucherManagement() {
           {isPopupOpen && (
             <div className="fixed inset-0 z-50 flex items-center justify-center">
               {/* Backdrop with 60% opacity */}
-              <div 
-                className="fixed inset-0 bg-black opacity-60" 
+              <div
+                className="fixed inset-0 bg-black opacity-60"
                 onClick={handleClosePopup}
               ></div>
 
@@ -216,8 +210,8 @@ export default function VoucherManagement() {
               <div className="bg-white rounded-lg shadow-xl p-6 w-3/5 max-w-4xl z-10 max-h-[90vh] overflow-y-auto">
                 <div className="flex justify-between items-center mb-4">
                   <h2 className="text-xl font-bold text-black">Thêm mã giảm giá mới</h2>
-                  <button 
-                    onClick={handleClosePopup} 
+                  <button
+                    onClick={handleClosePopup}
                     className="text-gray-500 hover:text-gray-700"
                   >
                     <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -225,10 +219,10 @@ export default function VoucherManagement() {
                     </svg>
                   </button>
                 </div>
-                
-                <VoucherView 
-                  onSubmit={handleCreateVoucher} 
-                  onCancel={handleClosePopup} 
+
+                <VoucherView
+                  onSubmit={handleCreateVoucher}
+                  onCancel={handleClosePopup}
                 />
               </div>
             </div>
