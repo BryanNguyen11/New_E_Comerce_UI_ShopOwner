@@ -22,11 +22,11 @@ export default function AuthStatus() {
     <div>
       {authState.isAuthenticated ? (
         <div>
-          <p>Welcome, {authState.user?.last_name + " " + authState.user?.first_name || authState.user?.email}</p>
-          <button onClick={kcLogout}>Logout</button>
+          <p className='text-blue-600'>Welcome, {authState.user?.last_name + " " + authState.user?.first_name || authState.user?.email}</p>
+          <button className='text-red-500' onClick={kcLogout}>Logout</button>
         </div>
       ) : (
-        <button onClick={kcLogin}>Login</button>
+        <button className='text-blue-600' onClick={kcLogin}>Login</button>
       )}
     </div>
   )

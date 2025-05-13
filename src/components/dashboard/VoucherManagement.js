@@ -46,9 +46,19 @@ export default function VoucherManagement() {
     fetchVouchers();
   }, [user, authToken]);
 
-  const handleDelete = (id) => {
-    setVouchers(vouchers.filter((voucher) => voucher.id !== id));
-  };
+  const handleDelete = async (id) => {
+  const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa mã giảm giá này không?");
+  if (confirmDelete) {
+    const response = await fetch(`/api/vouchers/${id}/delete`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    setVouchers((prevVouchers) => prevVouchers.filter((voucher) => voucher.voucherId !== id));
+  }
+};
 
   const getMostUsedVoucher = () => {
     return vouchers.reduce((max, voucher) => (voucher.totalUsed > max.totalUsed ? voucher : max), vouchers[0]);
