@@ -93,13 +93,13 @@ export const voucherApi = {
     }
   },
 
-  createVoucher: async (voucherData) => {
+  createVoucher: async (voucherData,token) => {
     try {
       const response = await fetch(`${BACKEND_URL}${API_ENDPOINTS.VOUCHERS.CREATE}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Authorization': `Bearer ${token}`,
         },
         body: JSON.stringify(voucherData),
       });

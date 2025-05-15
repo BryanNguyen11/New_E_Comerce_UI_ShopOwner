@@ -5,29 +5,21 @@ import { FaStar } from 'react-icons/fa';
 export const ProductCard = ({ product }) => {
   return (
     <Link 
-      href={`/product/${product.id}`}
+      href={`/product/${product.productId}`}
       className="relative group hover:shadow-lg transition-shadow bg-white rounded-sm overflow-hidden"
     >
       <div className="relative">
         <img
-          src={product.image}
-          alt={product.name}
+          src={product.coverImage}
+          alt={product.productName}
           className="w-full aspect-square object-cover"
         />
-        {product.discount > 0 && (
-          <div className="absolute top-0 right-0 bg-[#ee4d2d] text-white text-xs px-1">
-            {product.discount}% GIẢM
-          </div>
-        )}
       </div>
       <div className="p-2">
-        <h4 className="text-sm text-gray-800 line-clamp-2 mb-2 min-h-[32px]">{product.name}</h4>
+        <h4 className="text-sm text-gray-800 line-clamp-2 mb-2 min-h-[32px]">{product.productName}</h4>
         <div className="space-y-2">
           <div className="flex items-center gap-2">
-            <span className="text-[#ee4d2d] text-lg font-medium">₫{product.price.toLocaleString()}</span>
-            {product.oldPrice > 0 && (
-              <span className="text-black text-xs line-through">₫{product.oldPrice.toLocaleString()}</span>
-            )}
+            <span className="text-black text-lg">₫{product.price.toLocaleString()}</span>
           </div>
           <div className="flex items-center justify-between text-xs text-gray-500">
             <div className="flex items-center gap-1">
@@ -40,9 +32,9 @@ export const ProductCard = ({ product }) => {
                   />
                 ))}
               </div>
-              <span>({product.ratingCount})</span>
+              {/* <span>({product.ratingCount})</span> */}
             </div>
-            <span>Đã bán {product.sold.toLocaleString()}</span>
+            <span>Đã bán {product.soldCount.toLocaleString()}</span>
           </div>
         </div>
       </div>

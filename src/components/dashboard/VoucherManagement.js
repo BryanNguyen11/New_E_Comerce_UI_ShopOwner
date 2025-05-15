@@ -107,7 +107,7 @@ export default function VoucherManagement() {
       console.log("Voucher từ form:", newVoucher);
       
       // Gửi dữ liệu voucher tới API
-      const createdVoucher = await voucherApi.createVoucher(newVoucher);
+      const createdVoucher = await voucherApi.createVoucher(newVoucher, authState.token);
       console.log("Voucher từ API:", createdVoucher);
       
       // Chuyển đổi từ cấu trúc API sang cấu trúc component

@@ -11,15 +11,12 @@ import { mockConversations } from '@/data/mockData';
 import AuthStatus from '@/components/AuthStatus';
 
 export default function HomePage() {
-  const { user, logout } = useAuth();
-  const { products, hasMore, loadMoreProducts, loading } = useProducts();
+  const { user, authState } = useAuth();
+  const { products, hasMore, loadMoreProducts, loading } = useProducts(0,10, authState.token);
   const [isChatPopupVisible, setChatPopupVisible] = useState(false);
   const [activeChat, setActiveChat] = useState(null);
 
 
-  useEffect(() => {
-    console.log("User data:", user);
-  },[] );
 
   const toggleChatPopup = () => {
     setChatPopupVisible(!isChatPopupVisible);
@@ -88,7 +85,7 @@ export default function HomePage() {
               <div className="flex">
                 <input
                   type="text"
-                  placeholder="Tìm sản phẩm, thương hiệu và tên shop"
+                  placeholder="Tìm sản phẩm"
                   className="w-full px-4 py-2 rounded-l-md text-sm bg-white text-gray-700 placeholder-gray-400 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button className="bg-blue-500 text-white px-6 py-2 rounded-r-md hover:bg-blue-600">
@@ -97,9 +94,11 @@ export default function HomePage() {
               </div>
             </div>
             <div className="text-gray-700 text-2xl relative flex items-center gap-4">
-              <div className="relative">
-                <FaShoppingCart size={24} className="cursor-pointer text-gray-700 hover:text-blue-500" />
-                <span className="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">0</span>
+              <div className="relative cursor-pointer">
+                <Link href="/cart">
+                  <FaShoppingCart size={24} className="cursor-pointer text-gray-700 hover:text-blue-500" />
+                  <span className="absolute -top-2 -right-2 bg-blue-500 text-white rounded-full text-xs w-5 h-5 flex items-center justify-center">0</span>
+                </Link>
               </div>
               <div className="relative">
                 <FaComments
@@ -189,22 +188,6 @@ export default function HomePage() {
       )}
 
       {/* Main Menu */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4">
-          <div className="flex gap-4 text-sm py-2">
-            <a href="#" className="text-black hover:text-blue-500">Ốp Lưng iPhone</a>
-            <a href="#" className="text-black hover:text-blue-500">Đẹp Nữ</a>
-            <a href="#" className="text-black hover:text-blue-500">Kẹp Tóc</a>
-            <a href="#" className="text-black hover:text-blue-500">Quạt Cầm Tay</a>
-            <a href="#" className="text-black hover:text-blue-500">Áo Phông Nữ</a>
-            <a href="#" className="text-black hover:text-blue-500">Túi Xách Nữ</a>
-            <a href="#" className="text-black hover:text-blue-500">Áo</a>
-            <a href="#" className="text-black hover:text-blue-500">Kem Chống Nắng</a>
-            <a href="#" className="text-black hover:text-blue-500">Dép Nam</a>
-            <a href="#" className="text-black hover:text-blue-500">Quần Đùi Nữ</a>
-          </div>
-        </div>
-      </div>
 
       {/* Banner Section */}
       <div className="container mx-auto px-4 py-4">
@@ -220,37 +203,16 @@ export default function HomePage() {
       </div>
 
       {/* Flash Sale Section */}
-      <div className="container mx-auto px-4 py-4">
-        <div className="bg-gray-100 rounded-sm p-4 shadow-md">
-          <div className="flex items-center justify-between mb-4">
-            <div className="flex items-center gap-4">
-              <img
-                src="/images/banner/flash-sale-banner.jpg"
-                alt="Flash Sale"
-                className="h-8"
-              />
-              <div className="text-gray-700 text-lg font-bold">00 : 00 : 00</div>
-            </div>
-            <a href="#" className="text-blue-500 font-medium hover:underline">
-              Xem tất cả
-            </a>
-          </div>
-          <div className="grid grid-cols-6 gap-4">
-            {products.slice(0, 6).map((product) => (
-              <ProductCard key={product.id} product={product} />
-            ))}
-          </div>
-        </div>
-      </div>
-
+      
       {/* Product List */}
       <div className="container mx-auto px-4 py-4">
         <div className="bg-white rounded-sm p-4 shadow-md">
-          <h3 className="text-gray-700 text-lg font-medium mb-4">GỢI Ý HÔM NAY</h3>
+          {/* <h3 className="text-gray-700 text-lg font-medium mb-4">GỢI Ý HÔM NAY</h3> */}
           <InfiniteScroll
             dataLength={products.length}
             next={loadMoreProducts}
             hasMore={hasMore}
+            
             loader={
               <div className="text-center py-4">
                 <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
@@ -265,7 +227,7 @@ export default function HomePage() {
           >
             <div className="grid grid-cols-6 gap-4">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.productId} product={product} />
               ))}
             </div>
           </InfiniteScroll>
