@@ -1,46 +1,79 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { voucherApi } from "@/services/api/voucher";
 
 export default function VoucherDetailView({ voucherId, onBack }) {
   const [voucherDetails, setVoucherDetails] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
-    // Giả định: Trong một ứng dụng thực tế, bạn sẽ gọi API để lấy chi tiết voucher
-    // Trong ví dụ này, chúng ta sẽ sử dụng dữ liệu mẫu
-    const fetchVoucherDetails = () => {
-      setLoading(true);
-      // Giả lập API call
-      setTimeout(() => {
-        setVoucherDetails({
-          id: voucherId,
-          name: "Giảm giá mùa hè",
-          code: "SUMMER2025",
-          startDate: "2025-05-01",
-          endDate: "2025-07-31",
-          discountType: "percentage",
-          discountValue: 20,
-          minOrderValue: 500000,
-          maxUsage: 1000,
-          maxUsagePerUser: 2,
-          totalUsed: 150,
-          status: "active",
-          applicableProducts: ["Áo thun nam", "Quần jean nam", "Giày thể thao"],
-          createdAt: "2025-04-15",
-          createdBy: "Admin",
-        });
+    const fetchVoucherDetails = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        
+        const apiVoucher = await voucherApi.getVoucherById(voucherId);
+        
+        // Chuyển đổi từ định dạng API sang định dạng hiển thị
+        const formattedVoucher = {
+          id: apiVoucher.id,
+          name: apiVoucher.voucherName || "Voucher không tên",
+          code: apiVoucher.voucherCode || "-",
+          startDate: apiVoucher.startDate ? new Date(apiVoucher.startDate).toLocaleDateString() : "-",
+          endDate: apiVoucher.endDate ? new Date(apiVoucher.endDate).toLocaleDateString() : "-",
+          discountType: apiVoucher.voucherType === "PERCENT" ? "percentage" : "amount",
+          discountValue: apiVoucher.voucherType === "PERCENT" ? 
+            Number(apiVoucher.percentDiscount) : Number(apiVoucher.valueDiscount || 0),
+          minOrderValue: Number(apiVoucher.minPriceRequired || 0),
+          maxUsage: Number(apiVoucher.usesCount || 0),
+          maxUsagePerUser: 1,
+          totalUsed: Number(apiVoucher.usedCount || 0),
+          status: apiVoucher.active ? "active" : "inactive",
+          applicableProducts: apiVoucher.products || [],
+          createdAt: apiVoucher.createdAt ? new Date(apiVoucher.createdAt).toLocaleDateString() : "-",
+          createdBy: apiVoucher.createdBy || "Admin",
+        };
+        
+        setVoucherDetails(formattedVoucher);
         setLoading(false);
-      }, 500);
+      } catch (err) {
+        console.error("Error fetching voucher details:", err);
+        setError(err.message || "Không thể lấy thông tin chi tiết mã giảm giá");
+        setLoading(false);
+      }
     };
 
     fetchVoucherDetails();
   }, [voucherId]);
-
   if (loading) {
     return (
       <div className="flex justify-center items-center h-64">
+        <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-500 mr-3"></div>
         <span className="text-gray-500">Đang tải...</span>
+      </div>
+    );
+  }
+  
+  if (error) {
+    return (
+      <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative" role="alert">
+        <div className="flex">
+          <div className="py-1">
+            <svg className="fill-current h-6 w-6 text-red-500 mr-4" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20"><path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 10.32 10.32zM10 6a1 1 0 0 1 1 1v3a1 1 0 1 1-2 0V7a1 1 0 0 1 1-1zm0 8a1 1 0 1 1 0-2 1 1 0 0 1 0 2z"/></svg>
+          </div>
+          <div>
+            <p className="font-bold">Lỗi</p>
+            <p className="text-sm">{error}</p>
+            <button
+              onClick={onBack}
+              className="mt-3 bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-2 rounded"
+            >
+              Quay lại
+            </button>
+          </div>
+        </div>
       </div>
     );
   }

@@ -6,6 +6,12 @@ export const API_ENDPOINTS = {
     REGISTER: '/api/auth/register',
     LOGOUT: '/api/auth/logout',
   },
+  VOUCHERS: {
+    LIST: '/api/vouchers',
+    DETAIL: '/api/vouchers/:id',
+    CREATE: '/api/vouchers',
+    DELETE: '/api/vouchers/:id',
+  },
 };
 
 export const DEFAULT_PAGINATION = {

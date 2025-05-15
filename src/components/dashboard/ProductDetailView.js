@@ -1,24 +1,20 @@
-// src/components/dashboard/ProductDetailView.js
 "use client";
-import { useEffect, useState } from "react";
-import { mockProducts } from "@/data/mockData";
-import { CATEGORIES } from "@/utils/constants";
+import { useEffect, useRef, useState } from "react";
+import EditProductModal from "../product/EditProductModal";
 import { useAuth } from "@/context/AuthContext";
+import { message } from "antd";
 
-// Dữ liệu nhà cung cấp (ví dụ)
-const supplierInfo = {
-  name: "Ronald Martin",
-  phone: "98789 86757",
-};
 
 export default function ProductDetailView({ productId, onBack }) {
   const { user, authState } = useAuth();
+  const modalRef = useRef(null);
   const [product, setProduct] = useState(null);
   const [activeTab, setActiveTab] = useState("Tổng quan");
   const [visibility, setVisibility] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
   const handleToggleVisibility = async (productId) => {
-    const response = await fetch(`/api/products/${productId}/${visibility ? 'hide' : 'show'}`, {
+    const response = await fetch(`/api/products/${productId}/${visibility ? "hide" : "show"}`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json",
@@ -29,30 +25,35 @@ export default function ProductDetailView({ productId, onBack }) {
       console.error("Error updating visibility:", response.statusText);
       return;
     }
-    
-    setVisibility(x => !x);
-  }
-    
+    setVisibility((x) => !x);
+  };
+
+  const fetchProduct = async () => {
+    const productData = await fetch(`/api/products/${productId}`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${authState.token}`,
+      },
+    });
+    if (!productData.ok) {
+      console.error("Error fetching product:", productData.statusText);
+      return;
+    }
+    const productJson = await productData.json();
+    console.log("Product data:", productJson);
+    setVisibility(productJson.show);
+    setProduct(productJson);
+
+  };
 
   useEffect(() => {
-    const fetchProduct = async () => {
-      const productData = await fetch(`/api/products/${productId}`, {
-        method: "GET",
-        headers: {
-          Authorization: `Bearer ${authState.token}`,
-        },
-      });
-      if (!productData.ok) {
-        console.error("Error fetching product:", productData.statusText);
-        return;
-      }
-      const productJson = await productData.json();
-      console.log("Product data:", productJson);
-      setVisibility(productJson.show);
-      setProduct(productJson);
-    };
     fetchProduct();
   }, [productId]);
+
+  const handleSaveProduct = () => {
+    fetchProduct();
+    message.success("Cập nhật sản phẩm thành công");
+  };
 
   if (!product)
     return (
@@ -71,9 +72,14 @@ export default function ProductDetailView({ productId, onBack }) {
 
       {/* Header và nút hành động */}
       <div className="flex items-center justify-between mb-4">
-        <h1 className="text-xl font-medium text-black">{product.name}</h1>
+        <h1 className="text-xl font-medium text-black">{product.productName}</h1>
         <div className="flex gap-2">
-          <button className="px-4 py-2 border border-gray-300 rounded text-black bg-white hover:bg-gray-50 flex items-center gap-2 text-sm">
+          <button
+            onClick={() => {
+              modalRef.current.showModal();
+            }}
+            className="px-4 py-2 border border-gray-300 rounded text-black bg-white hover:bg-gray-50 flex items-center gap-2 text-sm"
+          >
             <i className="fas fa-pen"></i> Sửa
           </button>
           <button className="px-4 py-2 border border-gray-300 rounded text-black bg-white hover:bg-gray-50 flex items-center gap-2 text-sm">
@@ -128,12 +134,12 @@ export default function ProductDetailView({ productId, onBack }) {
                   <div className="text-gray-500">Số lượng bán ra</div>
                   <div className="text-black">{product.soldCount}</div>
                   <div className="text-gray-500">Chú thích</div>
-                  <div className="text-black">{product.description}</div>
+                  <div className="text-black">{product.description || "Không có"}</div>
                   <div className="text-gray-500">Thương hiệu</div>
-                  <div className="text-black">{product.brand}</div>
-                  <div className="text-gray-500">Danh mục 1 : {product.firstCategoryName}</div>
+                  <div className="text-black">{product.brand || "Không có"}</div>
+                  <div className="text-gray-500">Danh mục 1: {product.firstCategoryName}</div>
                   <div className="text-black">
-                    {product.firstCategories.map((category) => (
+                    {product.firstCategories?.map((category) => (
                       <span
                         key={category}
                         className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
@@ -142,9 +148,9 @@ export default function ProductDetailView({ productId, onBack }) {
                       </span>
                     ))}
                   </div>
-                  <div className="text-gray-500">Danh mục 2 : {product.secondCategoryName}</div>
+                  <div className="text-gray-500">Danh mục 2: {product.secondCategoryName}</div>
                   <div className="text-black">
-                    {product.secondCategories.map((category) => (
+                    {product.secondCategories?.map((category) => (
                       <span
                         key={category}
                         className="inline-block bg-blue-100 text-blue-800 text-xs font-semibold mr-2 px-2.5 py-0.5 rounded"
@@ -153,20 +159,15 @@ export default function ProductDetailView({ productId, onBack }) {
                       </span>
                     ))}
                   </div>
-
-                  {/* Thêm trạng thái sản phẩm mới */}
                   <div className="text-gray-500">Trạng thái sản phẩm</div>
                   <div className="text-black">{product.new ? "Mới" : "Cũ"}</div>
-                  {/* Thêm toggle hiển thị sản phẩm */}
                   <div className="text-gray-500">Hiển thị</div>
                   <div className="text-black">
                     <label className="relative inline-flex items-center cursor-pointer">
                       <input
                         type="checkbox"
                         checked={visibility}
-                        onChange={() =>
-                          handleToggleVisibility(product.productId)
-                        }
+                        onChange={() => handleToggleVisibility(product.productId)}
                         className="sr-only peer"
                       />
                       <div className="w-11 h-6 bg-gray-200 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-blue-600"></div>
@@ -181,7 +182,7 @@ export default function ProductDetailView({ productId, onBack }) {
 
             {/* Cột ảnh và số liệu */}
             <div className="col-span-1">
-              {/* Ảnh sản phẩm*/}
+              {/* Ảnh sản phẩm */}
               <div className="mb-8">
                 <h3 className="text-black font-semibold mb-4 text-base">
                   Ảnh chính của sản phẩm
@@ -203,9 +204,9 @@ export default function ProductDetailView({ productId, onBack }) {
                   Thư viện hình ảnh
                 </h3>
                 <div className="grid grid-cols-3 gap-4">
-                  {product.imageList.map((data, index) => (
+                  {product.imageList?.map((data, index) => (
                     <div
-                      key={index}
+                      key={data}
                       className="border-2 border-dashed border-gray-300 rounded p-1"
                     >
                       <img
@@ -223,17 +224,18 @@ export default function ProductDetailView({ productId, onBack }) {
                   Video sản phẩm
                 </h3>
                 <div className="grid grid-cols-3 gap-4">
-                  <video
-                    controls
-                    className="w-full h-80 object-cover rounded col-span-3"
-                    src={product.video}
-                  />
+                  {product.video && (
+                    <video
+                      controls
+                      className="w-full h-80 object-cover rounded col-span-3"
+                      src={product.video}
+                    />
+                  )}
                 </div>
               </div>
             </div>
           </div>
         )}
-        {/* Placeholder cho các tab khác */}
         {activeTab !== "Tổng quan" && (
           <div className="py-4">
             <p className="text-gray-500">
@@ -242,6 +244,15 @@ export default function ProductDetailView({ productId, onBack }) {
           </div>
         )}
       </div>
+
+      {/* {isEditModalOpen && ( */}
+        <EditProductModal
+          dialogRef={modalRef}
+          product={product}
+          onClose={() => setIsEditModalOpen(false)}
+          onSave={handleSaveProduct}
+        />
+      {/* )}*/}
     </div>
   );
 }

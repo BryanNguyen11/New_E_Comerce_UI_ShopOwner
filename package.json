@@ -9,6 +9,8 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@headlessui/react": "^2.2.3",
+    "antd": "^5.25.1",
     "chart.js": "^4.4.9",
     "form-data": "^4.0.2",
     "formidable": "^3.5.4",

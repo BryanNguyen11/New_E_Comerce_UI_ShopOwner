@@ -49,6 +49,8 @@ export function AuthProvider({ children }) {
     };
 
     keycloak.onAuthLogout = () => {
+      setUser(null);
+      localStorage.removeItem("user");
       setAuthState({
         isAuthenticated: false,
         user: null,
