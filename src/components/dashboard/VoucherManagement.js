@@ -9,44 +9,46 @@ export default function VoucherManagement() {
   const [vouchers, setVouchers] = useState([]);
   const { user, authState } = useAuth();
   const authToken = authState.token;
+  const [toast, setToast] = useState(null);
 
 
   // State để theo dõi voucher được chọn
   const [selectedVoucherId, setSelectedVoucherId] = useState(null);
   // State để kiểm soát hiển thị popup
   const [isPopupOpen, setIsPopupOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchVouchers = async () => {
-      // Giả lập API call
-      if (!user) {
-        console.log("Chưa có người dùng, không thể gọi API");
-        return;
-      }
-      // cai nay se vao trong phan pages/api/....
-      const url = new URL("/api/vouchers/vendor/" + user.userId, window.location.origin);
-      url.searchParams.append("page", 0);
-      url.searchParams.append("size", 10);
-      console.log("URL:", url.toString());
-      const response = await fetch(url, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${authToken}`,
-        },
-      });
-      const data = await response.json();
-      if (!response.ok) {
-        console.error("Lỗi khi gọi API:", data);
-        return;
-      }
-      console.log("Dữ liệu từ API:", data);
-      setVouchers(data);
+  const fetchVouchers = async () => {
+    // Giả lập API call
+    if (!user) {
+      console.log("Chưa có người dùng, không thể gọi API");
+      return;
     }
+    // cai nay se vao trong phan pages/api/....
+    const url = new URL("/api/vouchers/vendor/" + user.userId, window.location.origin);
+    url.searchParams.append("page", 0);
+    url.searchParams.append("size", 10);
+    console.log("URL:", url.toString());
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    });
+    const data = await response.json();
+    if (!response.ok) {
+      console.error("Lỗi khi gọi API:", data);
+      return;
+    }
+    console.log("Dữ liệu từ API:", data);
+    setVouchers(data);
+  };
+  useEffect(() => {
+
     fetchVouchers();
   }, [user, authToken]);
 
   const handleDelete = async (id) => {
+    const voucher = vouchers.find(v => v.voucherId === id);
     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa mã giảm giá này không?");
     if (confirmDelete) {
       const response = await fetch(`/api/vouchers/${id}/delete`, {
@@ -55,8 +57,15 @@ export default function VoucherManagement() {
           "Content-Type": "application/json",
           Authorization: `Bearer ${authToken}`,
         },
-      })
-      setVouchers((prevVouchers) => prevVouchers.filter((voucher) => voucher.id !== id));
+      });
+      if (response.ok) {
+        setToast(`Đã xóa voucher "${voucher?.voucherName || id}"`);
+        await fetchVouchers();
+      } else {
+        setToast("Xóa voucher thất bại!");
+      }
+      // Ẩn toast sau 3 giây
+      setTimeout(() => setToast(null), 3000);
     }
   };
 
@@ -164,6 +173,12 @@ export default function VoucherManagement() {
               <p className="text-xs text-black">Số mã hết hạn trong 3 ngày tới</p>
             </div>
           </div>
+          {/* Toast notification */}
+          {toast && (
+            <div className="fixed bottom-6 right-6 z-50 bg-green-600 text-white px-4 py-2 rounded shadow-lg animate-fade-in">
+              {toast}
+            </div>
+          )}
 
           {/* Voucher Table */}
           <div className="bg-white p-4 rounded shadow overflow-x-auto">
