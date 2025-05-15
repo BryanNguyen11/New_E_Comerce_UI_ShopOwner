@@ -46,10 +46,10 @@ export default function VoucherManagement() {
     fetchVouchers();
   }, [user, authToken]);
 
-  const handleDelete = async(id) => {
+  const handleDelete = async (id) => {
     const confirmDelete = window.confirm("Bạn có chắc chắn muốn xóa mã giảm giá này không?");
     if (confirmDelete) {
-      const response= await fetch(`/api/vouchers/${id}/delete`, {
+      const response = await fetch(`/api/vouchers/${id}/delete`, {
         method: "DELETE",
         headers: {
           "Content-Type": "application/json",
@@ -107,23 +107,23 @@ export default function VoucherManagement() {
       maxUsagePerUser: 1,
       totalUsed: 0 // Mã mới nên chưa có lượt sử dụng
     };
-    
+
     console.log("Voucher đã chuyển đổi:", voucherToAdd);
-    
+
     setVouchers([...vouchers, voucherToAdd]);
     setIsPopupOpen(false); // Đóng popup sau khi tạo
-    
+
   };
 
   // Hiển thị có điều kiện dựa trên selectedVoucherId
   return (
-    <div className="p-6 bg-gray-100">
+    <div className="p-1 bg-gray-100">
       {selectedVoucherId ? (
         <VoucherDetailView voucherId={selectedVoucherId} onBack={handleBackToList} />
       ) : (
         <>
           {/* Search and Summary Section */}
-          <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center justify-between mb-5">
             <div className="flex items-center gap-4">
               <button
                 className="bg-blue-500 text-white py-2 px-4 rounded-md hover:bg-blue-600"
@@ -136,26 +136,32 @@ export default function VoucherManagement() {
           </div>
 
           {/* Summary Cards */}
-          <div className="grid grid-cols-4 gap-4 mb-6">
+          <div className="grid grid-cols-4 gap-4 mb-5">
             <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm font-medium text-black">Loại giảm giá</p>
+              <p className="text-sm font-medium text-black">Số lượng Vouchers</p>
               <p className="text-2xl font-bold text-blue-500">{vouchers.length}</p>
-              <p className="text-xs text-black">7 ngày gần đây</p>
+
             </div>
-            <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm font-medium text-black">Tổng số lượng mã giảm giá</p>
-              <p className="text-2xl font-bold text-orange-500">{vouchers.reduce((sum, v) => sum + v.maxUsage, 0)}</p>
-              <p className="text-xs text-black">7 ngày gần đây</p>
-            </div>
-            <div className="bg-white p-4 rounded shadow">
-              <p className="text-sm font-medium text-black">Mã giảm giá được sử dụng nhiều nhất</p>
-              <p className="text-2xl font-bold text-purple-500">{mostUsedVoucher?.name || ""}</p>
-              <p className="text-xs text-black">{mostUsedVoucher?.totalUsed || ""} lần</p>
-            </div>
+
+
             <div className="bg-white p-4 rounded shadow">
               <p className="text-sm font-medium text-black">Mã giảm giá sắp hết hạn</p>
-              <p className="text-2xl font-bold text-red-500">12</p>
-              <p className="text-xs text-black">2 mã hết hạn trong 7 ngày</p>
+              <p className="text-2xl font-bold text-red-500">
+                {
+                  vouchers.filter(v => {
+                    if (!v.endDate) return false;
+                    // Nếu endDate là dạng đã format, cần chuyển về yyyy-mm-dd để new Date nhận đúng
+                    const end = new Date(v.endDate);
+                    const now = new Date();
+                    // Đặt giờ về 0 để so sánh chính xác theo ngày
+                    end.setHours(0, 0, 0, 0);
+                    now.setHours(0, 0, 0, 0);
+                    const diff = (end - now) / (1000 * 60 * 60 * 24);
+                    return diff >= 0 && diff <= 3;
+                  }).length
+                }
+              </p>
+              <p className="text-xs text-black">Số mã hết hạn trong 3 ngày tới</p>
             </div>
           </div>
 
