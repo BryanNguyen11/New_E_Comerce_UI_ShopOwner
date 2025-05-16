@@ -22,9 +22,11 @@ export default function DashboardLayout({ children }) {
   const navigationItems = [
     { icon: "home", label: "Trang chủ", href: "/dashboard" },
     { icon: "box", label: "Kho hàng", href: "/dashboard/inventory" },
-    { icon: "users", label: "Nhà cung cấp", href: "/dashboard/supplier" }, // Cập nhật href
+    //remove supplier
+    // { icon: "users", label: "Nhà cung cấp", href: "/dashboard/supplier" }, // Cập nhật href
     { icon: "shopping-cart", label: "Đơn hàng", href: "/dashboard/order" },
     { icon: "tag", label: "Quản lý Voucher", href: "/dashboard/voucher" },
+    { icon: "users", label: "Seller Management", href: "/dashboard/seller-management" },
     { icon: "shopping-cart", label: "Quay về trang chủ", href: "/home" },
     
   ];
