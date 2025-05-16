@@ -73,12 +73,7 @@ export default function HomePage() {
               >
                 Dashboard
               </Link>
-              <a href="#" className="hover:text-blue-500">
-                Tải ứng dụng
-              </a>
-              <a href="#" className="hover:text-blue-500">
-                Kết nối
-              </a>
+             
               <div className="flex items-center gap-3">
                 <a href="#" className="hover:text-blue-500">
                   <FaFacebook size={16} />
