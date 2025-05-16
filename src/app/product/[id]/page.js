@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 import { useParams } from "next/navigation";
 import { message } from "antd";
+import ProductReviews from "@/components/product/ProductReviews";
 
 export default function ProductDetail() {
   const params = useParams(); // Get params from useParams hook
@@ -189,7 +190,7 @@ export default function ProductDetail() {
               <div className="flex items-center gap-4 mt-4">
                 <div className="flex items-center gap-1">
                   <span className="text-[#ee4d2d] text-lg">
-                    {product.ratingAvg}
+                    {product.ratingAvg.toFixed(1)}
                   </span>
                   <div className="flex text-[#ee4d2d]">
                     {Array(5)
@@ -206,10 +207,6 @@ export default function ProductDetail() {
                       ))}
 
                   </div>
-                </div>
-                <div className="border-l border-gray-300 pl-4">
-                  <span className="text-black">{product.ratingCount}</span>
-                  <span className="text-black ml-1">Đánh Giá</span>
                 </div>
                 <div className="border-l border-gray-300 pl-4">
                   <span className="text-black">
@@ -352,6 +349,11 @@ export default function ProductDetail() {
               )}
             </div>
           </div>
+          
+          {/* Product Reviews Section */}
+          {product && (
+            <ProductReviews productId={id} />
+          )}
         </div>
       </div>
     </div>

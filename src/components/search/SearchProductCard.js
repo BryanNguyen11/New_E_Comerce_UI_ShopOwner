@@ -33,9 +33,9 @@ const SearchProductCard = ({ product }) => {
     <Link href={`/product/${product.productId}`}>
       <div className="flex bg-white rounded-md overflow-hidden shadow-sm hover:shadow-md transition-shadow border border-gray-200">
         <div className="w-48 h-48 relative flex-shrink-0">
-          {product.images && product.images[0] ? (
+          {product.coverImage ? (
             <img
-              src={product.images[0]}
+              src={product.coverImage}
               alt={product.productName}
               className="w-full h-full object-cover"
             />
