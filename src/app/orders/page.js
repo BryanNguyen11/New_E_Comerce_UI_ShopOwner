@@ -45,6 +45,7 @@ export default function OrdersPage() {
       }
 
       const data = await response.json();
+      console.log("Fetched orders:", data);
       setOrders(data.content);
       setPagination({
         page: data.page,
@@ -98,13 +99,12 @@ export default function OrdersPage() {
 
   const handleChangeOrderState = async (orderId, newState) => {
     try {
-      const response = await fetch(`/api/orders/${orderId}/update-state`, {
+      const response = await fetch(`/api/orders/${orderId}/handle-success`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${authState.token}`,
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ orderState: newState }),
       });
 
       if (!response.ok) {
@@ -130,6 +130,9 @@ export default function OrdersPage() {
     if (!selectedProduct) return;
 
     setSubmittingReview(true);
+
+    console.log("Selected product for review:", selectedProduct);
+
     try {
       const response = await fetch("/api/reviews/create", {
         method: "POST",
@@ -182,7 +185,7 @@ export default function OrdersPage() {
               order={order}
               onCancel={orderState === "PENDING" ? () => handleCancelOrder(order.orderId) : null}
               onChangeState={orderState === "TRANSPORTING" ? () => handleChangeOrderState(order.orderId, "DELIVERED") : null}
-              onReview={orderState === "DELIVERED" ? (productDetail) => openReviewModal(productDetail) : null}
+              onReview={orderState === "DELIVERED" || orderState === "SUCCEEDED" ? (productDetail) => openReviewModal(productDetail) : null}
             />
           ))}
         </div>
