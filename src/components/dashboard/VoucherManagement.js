@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import VoucherDetailView from "./VoucherDetailView";
 import VoucherView from "./VoucherView";
 import { useAuth } from "@/context/AuthContext";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
 
 export default function VoucherManagement() {
   const [vouchers, setVouchers] = useState([]);
@@ -41,6 +43,27 @@ export default function VoucherManagement() {
     }
     console.log("Dữ liệu từ API:", data);
     setVouchers(data);
+  };
+  // Hàm xử lý khi nhấn nút tải xuống
+  const handleExportExcel = () => {
+    // Chuyển đổi dữ liệu vouchers thành mảng object đơn giản
+    const dataToExport = vouchers.map(v => ({
+      "Tên chương trình": v.voucherName,
+      "Mã voucher": v.voucherId,
+      "Thời gian bắt đầu": v.startDate,
+      "Thời gian kết thúc": v.endDate,
+      "Loại giảm giá": v.voucherType === "PERCENT" ? "Giảm %" : "Giảm tiền",
+      "Giá trị": v.voucherType === "PERCENT" ? `${v.percentDiscount || 0}%` : `${v.valueDiscount || 0} VND`,
+      "Tổng lượt sử dụng": v.usesCount,
+    }));
+
+    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
+    const workbook = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(workbook, worksheet, "Vouchers");
+
+    const excelBuffer = XLSX.write(workbook, { bookType: "xlsx", type: "array" });
+    const blob = new Blob([excelBuffer], { type: "application/octet-stream" });
+    saveAs(blob, "danh_sach_voucher.xlsx");
   };
   useEffect(() => {
 
@@ -140,7 +163,9 @@ export default function VoucherManagement() {
               >
                 Thêm mã giảm giá
               </button>
-              <button className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-400">Tải xuống</button>
+              <button className="bg-gray-300 text-black py-2 px-4 rounded-md hover:bg-gray-400"
+                onClick={handleExportExcel}>
+                Tải xuống</button>
             </div>
           </div>
 
@@ -190,7 +215,7 @@ export default function VoucherManagement() {
                   <th className="w-1/6 px-4 py-3 border-b text-black text-left font-semibold">Thời gian</th>
                   <th className="w-1/8 px-4 py-3 border-b text-black text-left font-semibold">Loại giảm giá</th>
                   <th className="w-1/8 px-4 py-3 border-b text-black text-left font-semibold">Giá trị</th>
-                  <th className="w-1/8 px-4 py-3 border-b text-black text-left font-semibold">Tổng lượt sử dụng</th>
+                  <th className="w-1/8 px-4 py-3 border-b text-black text-left font-semibold">Số lượt sử dụng còn lại</th>
                   <th className="w-1/8 px-4 py-3 border-b text-black text-center font-semibold">Hành động</th>
                 </tr>
               </thead>
