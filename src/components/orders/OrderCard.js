@@ -16,7 +16,7 @@ export default function OrderCard({ order, onCancel, onChangeState, onReview }) 
   };
 
   return (
-    <Card className="shadow-sm">
+    <Card className="mb-4 shadow-sm">
       <div className="flex justify-between items-center mb-4">
         <div className="flex items-center gap-2">
           <h3 className="text-lg font-medium">Đơn hàng #{order.orderId.substring(0, 8)}</h3>
@@ -39,7 +39,7 @@ export default function OrderCard({ order, onCancel, onChangeState, onReview }) 
         </div>
       </div>
 
-      <Divider />
+      <Divider style={{ margin: '12px 0' }} />
 
       {order.orderDetails.map((item, index) => (
         <div key={index} className="flex justify-between items-center py-3">
@@ -73,7 +73,7 @@ export default function OrderCard({ order, onCancel, onChangeState, onReview }) 
         </div>
       ))}
 
-      <Divider />
+      <Divider style={{ margin: '12px 0' }} />
 
       <div className="flex justify-between items-center">
         <div>
@@ -82,10 +82,14 @@ export default function OrderCard({ order, onCancel, onChangeState, onReview }) 
         </div>
         <div className="space-x-4">
           {onCancel && (
-            <Button danger onClick={onCancel}>Hủy đơn hàng</Button>
+            <Button type="primary" danger onClick={onCancel}>
+              Hủy đơn hàng
+            </Button>
           )}
           {onChangeState && (
-            <Button type="primary" onClick={onChangeState}>Đã nhận hàng</Button>
+            <Button type="primary" onClick={onChangeState}>
+              Đã nhận hàng
+            </Button>
           )}
         </div>
       </div>

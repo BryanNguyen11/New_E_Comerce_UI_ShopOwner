@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { Tabs, Pagination, message, Button, Modal, Rate, Input, Empty } from "antd";
 import OrderCard from "@/components/orders/OrderCard";
+import '@ant-design/v5-patch-for-react-19';
 
-const { TabPane } = Tabs;
 const { TextArea } = Input;
 
 export default function OrdersPage() {
@@ -76,8 +76,8 @@ export default function OrdersPage() {
 
   const handleCancelOrder = async (orderId) => {
     try {
-      const response = await fetch(`/api/orders/${orderId}/cancel`, {
-        method: "PUT",
+      const response = await fetch(`/api/orders/${orderId}/delete`, {
+        method: "DELETE",
         headers: {
           Authorization: `Bearer ${authState.token}`,
           "Content-Type": "application/json",
@@ -159,27 +159,82 @@ export default function OrdersPage() {
     }
   };
 
+  function renderOrderList(orderState) {
+    if (loading) {
+      return <div className="py-8 text-center">Đang tải...</div>;
+    }
+
+    if (orders.length === 0) {
+      return (
+        <Empty
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          description="Không tìm thấy đơn hàng nào"
+        />
+      );
+    }
+
+    return (
+      <div>
+        <div className="space-y-4 mb-6">
+          {orders.map((order) => (
+            <OrderCard
+              key={order.orderId}
+              order={order}
+              onCancel={orderState === "PENDING" ? () => handleCancelOrder(order.orderId) : null}
+              onChangeState={orderState === "TRANSPORTING" ? () => handleChangeOrderState(order.orderId, "DELIVERED") : null}
+              onReview={orderState === "DELIVERED" ? (productDetail) => openReviewModal(productDetail) : null}
+            />
+          ))}
+        </div>
+
+        {pagination.totalPages > 1 && (
+          <div className="flex justify-center mt-6">
+            <Pagination
+              current={pagination.page + 1}
+              total={pagination.totalElements}
+              pageSize={pagination.size}
+              onChange={handlePageChange}
+              showSizeChanger={false}
+            />
+          </div>
+        )}
+      </div>
+    );
+  }
+
+  const tabItems = [
+    {
+      key: "PENDING",
+      label: "Chờ xác nhận",
+      children: renderOrderList("PENDING")
+    },
+    {
+      key: "TRANSPORTING",
+      label: "Đang vận chuyển",
+      children: renderOrderList("TRANSPORTING")
+    },
+    {
+      key: "DELIVERED",
+      label: "Đã giao hàng",
+      children: renderOrderList("DELIVERED")
+    },
+    {
+      key: "SUCCEEDED",
+      label: "Hoàn thành",
+      children: renderOrderList("SUCCEEDED")
+    },
+    {
+      key: "RETURNED",
+      label: "Trả hàng",
+      children: renderOrderList("RETURNED")
+    }
+  ];
+
   return (
     <div className="container mx-auto px-4 py-8">
       <h1 className="text-2xl font-bold mb-6 text-gray-800">Đơn hàng của tôi</h1>
 
-      <Tabs activeKey={activeTab} onChange={handleTabChange}>
-        <TabPane tab="Chờ xác nhận" key="PENDING">
-          {renderOrderList("PENDING")}
-        </TabPane>
-        <TabPane tab="Đang vận chuyển" key="TRANSPORTING">
-          {renderOrderList("TRANSPORTING")}
-        </TabPane>
-        <TabPane tab="Đã giao hàng" key="DELIVERED">
-          {renderOrderList("DELIVERED")}
-        </TabPane>
-        <TabPane tab="Hoàn thành" key="SUCCEEDED">
-          {renderOrderList("SUCCEEDED")}
-        </TabPane>
-        <TabPane tab="Trả hàng" key="RETURNED">
-          {renderOrderList("RETURNED")}
-        </TabPane>
-      </Tabs>
+      <Tabs activeKey={activeTab} onChange={handleTabChange} items={tabItems} destroyOnHidden />
 
       <Modal
         title="Đánh giá sản phẩm"
@@ -235,47 +290,4 @@ export default function OrdersPage() {
       </Modal>
     </div>
   );
-
-  function renderOrderList(orderState) {
-    if (loading) {
-      return <div className="py-8 text-center">Đang tải...</div>;
-    }
-
-    if (orders.length === 0) {
-      return (
-        <Empty
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          description="Không tìm thấy đơn hàng nào"
-        />
-      );
-    }
-
-    return (
-      <div>
-        <div className="space-y-4 mb-6">
-          {orders.map((order) => (
-            <OrderCard
-              key={order.orderId}
-              order={order}
-              onCancel={orderState === "PENDING" ? () => handleCancelOrder(order.orderId) : null}
-              onChangeState={orderState === "TRANSPORTING" ? () => handleChangeOrderState(order.orderId, "DELIVERED") : null}
-              onReview={orderState === "DELIVERED" ? (productDetail) => openReviewModal(productDetail) : null}
-            />
-          ))}
-        </div>
-
-        {pagination.totalPages > 1 && (
-          <div className="flex justify-center mt-6">
-            <Pagination
-              current={pagination.page + 1}
-              total={pagination.totalElements}
-              pageSize={pagination.size}
-              onChange={handlePageChange}
-              showSizeChanger={false}
-            />
-          </div>
-        )}
-      </div>
-    );
-  }
 }

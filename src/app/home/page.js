@@ -23,7 +23,7 @@ import {
   FaComments,
   FaFileInvoice,
 } from "react-icons/fa";
-import { use, useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { mockConversations } from "@/data/mockData";
 import AuthStatus from "@/components/AuthStatus";
 import { useRouter } from 'next/navigation';
@@ -160,10 +160,12 @@ export default function HomePage() {
                 />
               </div>
               <div className="relative">
-                <FaFileInvoice
-                  size={24}
-                  className="cursor-pointer text-gray-700 hover:text-blue-500"
-                />
+                <Link href={`/orders`}>
+                  <FaFileInvoice
+                    size={24}
+                    className="cursor-pointer text-gray-700 hover:text-blue-500"
+                  />
+                </Link>
               </div>
             </div>
           </div>
