@@ -30,6 +30,7 @@ export default function RootLayout({ children }) {
           integrity="sha512-9usAa10IRO0HhonpyAIVpjrylPvoDwiPUiKdWk5t3PyolY1cOd4DSE0Ga+ri4AuTroPR5aQvXU9xC6qOPnzFeg=="
           crossOrigin="anonymous"
           referrerPolicy="no-referrer"
+          
         />
         {/* <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.ngrok.com 'unsafe-eval' 'unsafe-inline'; font-src 'self' https://assets.ngrok.com;"></meta> */}
       </head>

@@ -1,7 +1,11 @@
 import { Card, Button, Tag, Divider } from "antd";
 import { formatCurrency, formatDate } from "@/utils/formatters";
+import { useRouter } from "next/navigation";
 
 export default function OrderCard({ order, onCancel, onChangeState, onReview }) {
+
+  const router = useRouter();
+
   const getStatusTag = (status) => {
     const statusConfig = {
       PENDING: { color: "blue", text: "Chờ xác nhận" },
@@ -37,6 +41,10 @@ export default function OrderCard({ order, onCancel, onChangeState, onReview }) 
           <p>{order.deliveryAddress.recipientName}, {order.deliveryAddress.recipientPhone}</p>
           <p>{order.deliveryAddress.recipientAddress}</p>
         </div>
+        <div>
+          <p className="text-gray-500">Dự kiến giao hàng:</p>
+          <p className="font-medium">{formatDate(order.estimatedDeliveryTime)}</p>
+        </div>
       </div>
 
       <Divider style={{ margin: '12px 0' }} />
@@ -45,9 +53,12 @@ export default function OrderCard({ order, onCancel, onChangeState, onReview }) 
         <div key={index} className="flex justify-between items-center py-3">
           <div className="flex gap-4">
             <img 
+              onClick={() => {
+                router.push(`/product/${item.productId}`);
+              }}
               src={item.productImage} 
               alt={item.productName} 
-              className="w-16 h-16 object-cover border"
+              className="w-16 h-16 object-cover border cursor-pointer"
             />
             <div>
               <h4 className="font-medium">{item.productName}</h4>
@@ -60,7 +71,7 @@ export default function OrderCard({ order, onCancel, onChangeState, onReview }) 
           </div>
           <div className="text-right">
             <p className="font-medium text-lg">{formatCurrency(item.price)}</p>
-            {order.orderState === "DELIVERED" && onReview && (
+            {(order.orderState === "DELIVERED" || order.orderState === "SUCCEEDED") && onReview && (
               <Button 
                 type="link" 
                 onClick={() => onReview(item)}
