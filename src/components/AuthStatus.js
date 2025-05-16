@@ -23,22 +23,20 @@ export default function AuthStatus() {
   return (
     <div>
       {authState.isAuthenticated ? (
+
         <div className="flex items-center gap-4">
           <Link href="/profile">
             <FaUser />
           </Link>
           <div>
-            <p>
-              Welcome,{" "}
-              {authState.user?.last_name + " " + authState.user?.first_name ||
-                authState.user?.email}
-            </p>
-            <button onClick={kcLogout} style={{cursor: "pointer"}}>Logout</button>
-          </div>
+          <p className='text-blue-600'>Welcome, {authState.user?.last_name + " " + authState.user?.first_name || authState.user?.email}</p>
+          <button className='text-red-500' onClick={kcLogout}>Logout</button>
+        </div>
         </div>
       ) : (
-        <button onClick={kcLogin} style={{cursor: "pointer"}}>Login</button>
+        <button className='text-blue-600' onClick={kcLogin}>Login</button>
+
       )}
     </div>
-  );
+  )
 }

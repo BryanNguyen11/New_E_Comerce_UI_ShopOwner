@@ -1,5 +1,6 @@
 "use client";
 
+import { useAuth } from "@/context/AuthContext";
 import { useState } from "react";
 
 export default function VoucherView({ onSubmit, onCancel }) {    const [formData, setFormData] = useState({
@@ -13,6 +14,8 @@ export default function VoucherView({ onSubmit, onCancel }) {    const [formData
         usesCount: 100,
     });
     const [isLoading, setIsLoading] = useState(false);
+    const { user, authState } = useAuth();
+    const accessToken = authState.token;
     const [error, setError] = useState(null);
     const [validationErrors, setValidationErrors] = useState({});    const validateForm = () => {
         const errors = {};
@@ -48,12 +51,14 @@ export default function VoucherView({ onSubmit, onCancel }) {    const [formData
         setIsLoading(true);
 
         try {
-            const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://exclusion-info-pcs-tsunami.trycloudflare.com';
+            // const backendUrl = process.env.NEXT_PUBLIC_BACKEND_URL || 'https://exclusion-info-pcs-tsunami.trycloudflare.com';
             
             // Get user context for vendorId (assuming it's available in localStorage or similar)
             // In a real application, you might get this from a context or state management system
-            const vendorId = localStorage.getItem('vendorId') || "test";
+            const vendorId = user?.userId;
             
+            console.log('Vendor ID:', vendorId);
+
             // Format the data according to the API requirements
             const voucherPayload = {
                 voucherName: formData.voucherName,
@@ -69,11 +74,11 @@ export default function VoucherView({ onSubmit, onCancel }) {    const [formData
             
             console.log('Gửi dữ liệu voucher:', voucherPayload);
 
-            const response = await fetch(`${backendUrl}/api/vouchers`, {
+            const response = await fetch(`/api/vouchers/create-voucher`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+                    'Authorization': `Bearer ${accessToken}`,
                 },
                 body: JSON.stringify(voucherPayload),
             });
@@ -140,7 +145,7 @@ export default function VoucherView({ onSubmit, onCancel }) {    const [formData
                     <div>
                         <label className="block text-sm font-medium text-black">Thời gian bắt đầu <span className="text-red-500">*</span></label>
                         <input
-                            type="datetime-local"
+                            type="date"
                             value={formData.startDate}
                             onChange={(e) => {
                                 setFormData({ ...formData, startDate: e.target.value });
@@ -156,7 +161,7 @@ export default function VoucherView({ onSubmit, onCancel }) {    const [formData
                     <div>
                         <label className="block text-sm font-medium text-black">Thời gian kết thúc <span className="text-red-500">*</span></label>
                         <input
-                            type="datetime-local"
+                            type="date"
                             value={formData.endDate}
                             onChange={(e) => {
                                 setFormData({ ...formData, endDate: e.target.value });
