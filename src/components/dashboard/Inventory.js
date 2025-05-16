@@ -36,6 +36,10 @@ export default function Inventory() {
   });
 
   const handleLoadPage = async (nextPage) => {
+
+    if(!user) {
+      return;
+    }
     const url = new URL(
       "/api/products/vendors/" + user.userId,
       window.location.origin
@@ -56,6 +60,7 @@ export default function Inventory() {
       }
 
       const data = await response.json();
+      console.log("Product Page: ",data)
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);

@@ -116,6 +116,7 @@ export default function VoucherManagement() {
   // Hàm để đóng popup
   const handleClosePopup = () => {
     setIsPopupOpen(false);
+
   };
   // Hàm xử lý khi tạo mã giảm giá mới
   const handleCreateVoucher = async (newVoucher) => {

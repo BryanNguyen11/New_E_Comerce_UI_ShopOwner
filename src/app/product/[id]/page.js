@@ -1,31 +1,107 @@
 "use client";
 
-import { useState, useEffect } from 'react';
-import Link from 'next/link';
-import { getProduct } from '@/data/mockData';
+import { useState, useEffect } from "react";
+import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
+import { useParams } from "next/navigation";
+import { message } from "antd";
 
-export default function ProductDetail({ params }) {
+export default function ProductDetail() {
+  const params = useParams(); // Get params from useParams hook
+  const id = params.id; // Now safely access id
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState('');
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedFirstCategory, setSelectedFirstCategory] = useState(null);
+  const [selectedImageIdx, setImage] = useState(0);
   const [product, setProduct] = useState(null);
-  const [selectedSize, setSelectedSize] = useState('');
+  const [selectedSecondCategory, setSelectedSecondCategory] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const { authState, user } = useAuth();
+
+  const fetchProduct = async () => {
+    try {
+      if (!id || !authState.token) return;
+      console.log("productId :", id);
+      const response = await fetch(`/api/products/${id}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authState.token}`,
+        },
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch product");
+      }
+
+      const data = await response.json();
+      console.log("Data: ", data);
+      setProduct(data);
+    } catch (err) {
+      console.error("Error fetching product:", err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleAddToCart = async () => {
+    if (!!product && !!product.firstCategoryName && !selectedFirstCategory) {
+      message.error("Vui long chon loai dau tien")
+      return;
+    }
+    if (!!product && !!product.secondCategoryName && !selectedSecondCategory) {
+      message.error("Vui long chon loai thu 2")
+      return;
+    }
+
+    const data = await fetch('/api/cart-detail/add-product',{
+      headers:{
+        'Authorization': `Bearer ${authState.token}`,
+        'Content-Type': 'application/json'
+      },
+      method: 'POST',
+      body: JSON.stringify({
+        productId: id,
+        customerId: user.userId,
+        quantity: quantity,
+        firstCategory: selectedFirstCategory,
+        secondCategory: selectedSecondCategory,
+      }),
+    })
+    if (data.ok){
+      message.success("Thêm vào giỏ hàng thành công");
+    }
+    else{
+      message.error("Thêm vào giỏ hàng thất bại");
+    }
+
+  }
 
   useEffect(() => {
-    const productData = getProduct(params.id);
-    setProduct(productData);
-    if (productData) {
-      setSelectedColor(productData.colors[0]);
-      if (productData.sizes) {
-        setSelectedSize(productData.sizes[0]);
-      }
-    }
-  }, [params.id]);
+    fetchProduct();
+  }, [id, authState.token]); // Thêm id vào dependency array
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-black">Đang tải...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-100 flex items-center justify-center">
+        <div className="text-red-500">Lỗi: {error}</div>
+      </div>
+    );
+  }
 
   if (!product) {
     return (
       <div className="min-h-screen bg-gray-100 flex items-center justify-center">
-        <div className="text-black">Đang tải...</div>
+        <div className="text-black">Không tìm thấy sản phẩm</div>
       </div>
     );
   }
@@ -36,11 +112,18 @@ export default function ProductDetail({ params }) {
       <div className="bg-white py-2">
         <div className="container mx-auto px-4">
           <div className="text-sm">
-            <Link href="/" className="text-[#0055AA] hover:opacity-80">Shopee</Link>
+            <Link href="/" className="text-[#0055AA] hover:opacity-80">
+              Shopee
+            </Link>
             <span className="mx-1">›</span>
-            <Link href="/category/thoi-trang" className="text-[#0055AA] hover:opacity-80">Thời Trang</Link>
+            <Link
+              href="/category/thoi-trang"
+              className="text-[#0055AA] hover:opacity-80"
+            >
+              Thời Trang
+            </Link>
             <span className="mx-1">›</span>
-            <span className="text-black">{product.name}</span>
+            <span className="text-black">{product.productName}</span>
           </div>
         </div>
       </div>
@@ -52,22 +135,24 @@ export default function ProductDetail({ params }) {
             {/* Left: Product Images */}
             <div className="col-span-5">
               <div className="aspect-square relative">
-                <img 
-                  src={product.images[selectedImage]}
-                  alt={product.name}
+                <img
+                  src={product.coverImage}
+                  alt={product.productName}
                   className="w-full h-full object-cover rounded-sm"
                 />
               </div>
               <div className="grid grid-cols-5 gap-2 mt-4">
-                {product.images.map((img, index) => (
-                  <div 
-                    key={index} 
+                {product.imageList.map((img, index) => (
+                  <div
+                    key={index}
                     className={`aspect-square border hover:border-[#ee4d2d] cursor-pointer ${
-                      selectedImage === index ? 'border-[#ee4d2d]' : 'border-gray-200'
+                      selectedImageIdx === index
+                        ? "border-[#ee4d2d]"
+                        : "border-gray-200"
                     }`}
-                    onClick={() => setSelectedImage(index)}
+                    onClick={() => setImage(index)}
                   >
-                    <img 
+                    <img
                       src={img}
                       alt={`${product.name} ${index + 1}`}
                       className="w-full h-full object-cover"
@@ -88,27 +173,38 @@ export default function ProductDetail({ params }) {
                     <i className="fab fa-pinterest"></i>
                   </button>
                 </div>
-                <button className="ml-auto flex items-center gap-2 text-[#ee4d2d]">
+                {/* <button className="ml-auto flex items-center gap-2 text-[#ee4d2d]">
                   <i className="far fa-heart"></i>
                   <span className="text-black">Đã thích (21)</span>
-                </button>
+                </button> */}
               </div>
             </div>
 
             {/* Right: Product Info */}
             <div className="col-span-7">
               <div className="flex items-center gap-2">
-                <span className="text-white bg-[#ee4d2d] px-1 text-xs">Yêu thích</span>
-                <h1 className="text-xl font-bold text-black">{product.name}</h1>
+                <h1 className="text-xl font-bold text-black">{product.productName}</h1>
               </div>
 
               <div className="flex items-center gap-4 mt-4">
                 <div className="flex items-center gap-1">
-                  <span className="text-[#ee4d2d] text-lg">{product.rating}</span>
+                  <span className="text-[#ee4d2d] text-lg">
+                    {product.ratingAvg}
+                  </span>
                   <div className="flex text-[#ee4d2d]">
-                    {Array(5).fill(0).map((_, i) => (
-                      <i key={i} className={`fas fa-star ${i < Math.floor(product.rating) ? 'text-[#ee4d2d]' : 'text-gray-300'}`}></i>
-                    ))}
+                    {Array(5)
+                      .fill(0)
+                      .map((_, i) => (
+                        <i
+                          key={i}
+                          className={`fas fa-star ${
+                            i < Math.floor(product.ratingAvg)
+                              ? "text-[#ee4d2d]"
+                              : "text-gray-300"
+                          }`}
+                        ></i>
+                      ))}
+
                   </div>
                 </div>
                 <div className="border-l border-gray-300 pl-4">
@@ -116,7 +212,9 @@ export default function ProductDetail({ params }) {
                   <span className="text-black ml-1">Đánh Giá</span>
                 </div>
                 <div className="border-l border-gray-300 pl-4">
-                  <span className="text-black">{product.sold.toLocaleString()}</span>
+                  <span className="text-black">
+                    {product.soldCount.toLocaleString()}
+                  </span>
                   <span className="text-black ml-1">Đã bán</span>
                 </div>
                 <button className="ml-auto text-sm text-gray-500 hover:text-[#ee4d2d]">
@@ -126,9 +224,9 @@ export default function ProductDetail({ params }) {
 
               <div className="bg-gray-50 p-4 mt-4">
                 <div className="flex items-baseline gap-2">
-                  <span className="text-black line-through">₫{product.oldPrice.toLocaleString()}</span>
-                  <span className="text-[#ee4d2d] text-3xl">₫{product.price.toLocaleString()}</span>
-                  <span className="bg-[#ee4d2d] text-white px-1 text-xs">{product.discount}% GIẢM</span>
+                  <span className="text-[#ee4d2d] text-3xl">
+                    ₫{product.price.toLocaleString()}
+                  </span>
                 </div>
               </div>
 
@@ -156,39 +254,40 @@ export default function ProductDetail({ params }) {
                     </span>
                   </div>
                 </div>
-
-                <div className="flex gap-4">
-                  <span className="text-black w-24">Màu Sắc</span>
-                  <div className="flex flex-wrap gap-2">
-                    {product.colors.map((color, index) => (
-                      <button
-                        key={index}
-                        className={`px-4 py-2 border rounded ${
-                          selectedColor === color 
-                            ? 'border-[#ee4d2d] text-[#ee4d2d]' 
-                            : 'border-gray-300 hover:border-[#ee4d2d]'
-                        }`}
-                        onClick={() => setSelectedColor(color)}
-                      >
-                        <span className="text-black">{color}</span>
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                {product.sizes && (
+                {product.firstCategoryName && (
                   <div className="flex gap-4">
-                    <span className="text-black w-24">Kích Thước</span>
+                    <span className="text-black w-24">{product.firstCategoryName}</span>
                     <div className="flex flex-wrap gap-2">
-                      {product.sizes.map((size, index) => (
+                      {product.firstCategories.map((color, index) => (
                         <button
                           key={index}
                           className={`px-4 py-2 border rounded ${
-                            selectedSize === size 
-                              ? 'border-[#ee4d2d] text-[#ee4d2d]' 
-                              : 'border-gray-300 hover:border-[#ee4d2d]'
+                            selectedFirstCategory === color
+                              ? "border-[#ee4d2d] text-[#ee4d2d]"
+                              : "border-gray-300 hover:border-[#ee4d2d]"
                           }`}
-                          onClick={() => setSelectedSize(size)}
+                          onClick={() => setSelectedFirstCategory(color)}
+                        >
+                          <span className="text-black">{color}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {product.secondCategoryName && (
+                  <div className="flex gap-4">
+                    <span className="text-black w-24">{product.secondCategoryName }</span>
+                    <div className="flex flex-wrap gap-2">
+                      {product.secondCategories.map((size, index) => (
+                        <button
+                          key={index}
+                          className={`px-4 py-2 border rounded ${
+                            selectedSecondCategory === size
+                              ? "border-[#ee4d2d] text-[#ee4d2d]"
+                              : "border-gray-300 hover:border-[#ee4d2d]"
+                          }`}
+                          onClick={() => setSelectedSecondCategory(size)}
                         >
                           <span className="text-black">{size}</span>
                         </button>
@@ -210,7 +309,9 @@ export default function ProductDetail({ params }) {
                       type="number"
                       className="w-16 h-8 border-t border-b border-[#ee4d2d] text-center text-[#ee4d2d]"
                       value={quantity}
-                      onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                      onChange={(e) =>
+                        setQuantity(Math.max(1, parseInt(e.target.value) || 1))
+                      }
                     />
                     <button
                       className="w-8 h-8 border border-[#ee4d2d] text-[#ee4d2d] flex items-center justify-center hover:bg-[#fef6f5]"
@@ -218,16 +319,22 @@ export default function ProductDetail({ params }) {
                     >
                       +
                     </button>
-                    <span className="ml-4 text-black">{product.stock} sản phẩm có sẵn</span>
+                    <span className="ml-4 text-black">
+                      {product.stock} sản phẩm có sẵn
+                    </span>
                   </div>
                 </div>
 
                 <div className="flex gap-4 pt-4">
-                  <button className="flex-1 px-4 py-3 border border-[#ee4d2d] text-[#ee4d2d] flex items-center justify-center gap-2 hover:bg-[#fef6f5]">
+                  <button 
+                    className="flex-1 px-4 py-3 border border-[#ee4d2d] text-[#ee4d2d] flex items-center justify-center gap-2 hover:bg-[#fef6f5]"
+                    onClick={handleAddToCart}
+                  >
                     <i className="fas fa-cart-plus"></i>
                     Thêm Vào Giỏ Hàng
                   </button>
-                  <button className="flex-1 px-4 py-3 bg-[#ee4d2d] text-white hover:bg-[#d73211]">
+                  <button className="flex-1 px-4 py-3 bg-[#ee4d2d] text-white hover:bg-[#d73211]"
+                  onClick={handleAddToCart}>
                     Mua Ngay
                   </button>
                 </div>
@@ -235,8 +342,12 @@ export default function ProductDetail({ params }) {
 
               {product.description && (
                 <div className="mt-8 pt-8 border-t">
-                  <h2 className="text-black text-lg font-medium mb-4">Mô tả sản phẩm</h2>
-                  <p className="text-black whitespace-pre-line">{product.description}</p>
+                  <h2 className="text-black text-lg font-medium mb-4">
+                    Mô tả sản phẩm
+                  </h2>
+                  <p className="text-black whitespace-pre-line">
+                    {product.description}
+                  </p>
                 </div>
               )}
             </div>
