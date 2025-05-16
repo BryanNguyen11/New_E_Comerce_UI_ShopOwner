@@ -67,9 +67,44 @@ export default function OrderView() {
   };
 
   // Handle printing order
-  const handlePrintOrder = (order) => {
-
-
+  const handlePrintOrder = async (order) => {
+    try {
+      console.log('Printing order:', order);
+      const res = await fetch(`/api/print-order/generate/`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${authState.token}`,
+        },
+        body: JSON.stringify(order),
+      });
+      
+      if (!res.ok) {
+        throw new Error('Lỗi khi tạo file PDF');
+      }
+      
+      // Kiểm tra response có chứa PDF không
+      const blob = await res.blob();
+      
+      // Tạo URL tạm thời cho blob
+      const url = window.URL.createObjectURL(blob);
+      
+      // Tạo thẻ a để tải xuống
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `don-hang-${order.orderId.slice(0, 8)}.pdf`;
+      document.body.appendChild(link);
+      link.click();
+      
+      // Xóa thẻ a và giải phóng URL
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+      
+      message.success('Đã tạo file PDF thành công');
+    } catch (err) {
+      console.error('Lỗi khi tạo hoặc tải file PDF:', err);
+      message.error('Không thể tạo file PDF: ' + (err.message || 'Lỗi không xác định'));
+    }
   };
 
   // Handle order confirmation
@@ -232,7 +267,7 @@ export default function OrderView() {
         footer={
           selectedOrder && (
             <div style={{ display: 'flex', justifyContent: 'flex-end' }}>
-              <Button type="default">In đơn hàng</Button>
+              <Button onClick={ () => handlePrintOrder(selectedOrder)} type="default">In đơn hàng</Button>
               {selectedOrder.orderState === 'PENDING' && (
                 <Button type="primary" className="ml-2" onClick={() => {
                   handleConfirmOrder(selectedOrder.orderId);

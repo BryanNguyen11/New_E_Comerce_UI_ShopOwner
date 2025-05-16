@@ -435,7 +435,7 @@ export default function CartPage() {
         throw new Error("Failed to fetch customer info");
       }
       const data = await response.json();
-      setAddresses(data.address);
+      setAddresses(data.address || []);
       if (data.address) {
         data.address.forEach((address) => {
           if (address.isDefault) {
