@@ -8,7 +8,7 @@ export const API_ENDPOINTS = {
   },
   VOUCHERS: {
     LIST: '/api/vouchers',
-    DETAIL: '/api/vouchers/:id',
+    DETAIL: '/api/vouchers/:id/get',
     CREATE: '/api/vouchers',
     DELETE: '/api/vouchers/:id',
   },

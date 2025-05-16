@@ -247,7 +247,7 @@ export default function VoucherManagement() {
                           e.stopPropagation();
                           handleDelete(voucher.voucherId);
                         }}
-                        className="text-red-500 hover:underline font-medium"
+                        className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
                       >
                         Xóa
                       </button>

@@ -62,14 +62,14 @@ export const voucherApi = {
   }
 },
 
-  getVoucherById: async (id) => {
+  getVoucherById: async (id, token) => {
     try {
       const endpoint = API_ENDPOINTS.VOUCHERS.DETAIL.replace(':id', id);
-      const response = await fetch(`${BACKEND_URL}${endpoint}`, {
+      const response = await fetch(`${endpoint}`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
+          'Authorization': `Bearer ${token}`,
         },
       });
 
