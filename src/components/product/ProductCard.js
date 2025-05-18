@@ -27,7 +27,7 @@ export const ProductCard = ({ product }) => {
                 {[...Array(5)].map((_, index) => (
                   <FaStar
                     key={index}
-                    className={index < Math.floor(product.rating) ? "text-[#ee4d2d]" : "text-gray-300"}
+                    className={index < Math.floor(product.ratingAvg) ? "text-[#ee4d2d]" : "text-gray-300"}
                     size={12}
                   />
                 ))}

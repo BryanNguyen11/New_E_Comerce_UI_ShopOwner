@@ -39,6 +39,8 @@ export default function DashboardHomePage() {
   const [shopImage, setShopImage] = useState(null);
   const [imageUrl, setImageUrl] = useState('');
   const [loading, setLoading] = useState(false);
+  const [cccdInfo, setCccdInfo] = useState(null);
+  const [cccdVerified, setCccdVerified] = useState(false);
 
   const fetchVendorData = async () => {
     if (!user?.userId || !authState.token) return;
@@ -104,10 +106,69 @@ export default function DashboardHomePage() {
       reader.onload = () => {
         setImageUrl(reader.result);
         
-        // Upload image immediately after selection
-        uploadShopImage(info.file);
+        // Upload CCCD image for verification
+        uploadCccdForVerification(info.file);
       };
       reader.readAsDataURL(info.file);
+    }
+  };
+  
+  const uploadCccdForVerification = async (imageFile) => {
+    if (!imageFile) return;
+    
+    try {
+      // Create FormData for sending file
+      const formData = new FormData();
+      formData.append('file', imageFile);
+      
+      message.loading({ content: 'Đang xử lý căn cước công dân...', key: 'cccdVerification' });
+      
+      // Send the CCCD image to the OCR API
+      const response = await fetch('/api/ocr/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      if (!response.ok) throw new Error('Không thể xác thực CCCD');
+      
+      const data = await response.json();
+      console.log('CCCD verification result:', data);
+      
+      // Set the CCCD information
+      setCccdInfo(data);
+      message.success({ content: 'Đã xác thực căn cước công dân thành công!', key: 'cccdVerification' });
+      
+      // Show modal for user to confirm their information
+      Modal.confirm({
+        title: 'Xác nhận thông tin cá nhân',
+        content: (
+          <div>
+            <p>Vui lòng xác nhận thông tin từ CCCD của bạn:</p>
+            <ul className="mt-4">
+              <li><strong>Số CCCD:</strong> {data.soCccd}</li>
+              <li><strong>Họ tên:</strong> {data.hoTen}</li>
+              <li><strong>Ngày sinh:</strong> {data.ngaySinh}</li>
+              <li><strong>Giới tính:</strong> {data.gioiTinh}</li>
+              <li><strong>Quốc tịch:</strong> {data.quocTich}</li>
+            </ul>
+          </div>
+        ),
+        okText: 'Xác nhận thông tin chính xác',
+        cancelText: 'Thông tin không chính xác',
+        onOk() {
+          setCccdVerified(true);
+          message.success('Đã xác nhận thông tin CCCD');
+        },
+        onCancel() {
+          setCccdVerified(false);
+          message.error('Vui lòng tải lại ảnh CCCD');
+          setImageUrl('');
+          setCccdInfo(null);
+        },
+      });
+    } catch (error) {
+      console.error('Error verifying CCCD:', error);
+      message.error({ content: 'Không thể xác thực CCCD. Vui lòng thử lại.', key: 'cccdVerification' });
     }
   };
 
@@ -160,13 +221,19 @@ export default function DashboardHomePage() {
       return;
     }
     
+    if (!cccdVerified || !cccdInfo) {
+      message.error('Vui lòng xác thực căn cước công dân trước khi đăng ký cửa hàng');
+      return;
+    }
+    
     setLoading(true);
 
     try {
       // Create JSON data object for shop info (not FormData)
       const shopData = {
         shopName: values.shopName,
-        shopDescription: values.shopDescription
+        shopDescription: values.shopDescription,
+        cccdInfo: cccdInfo // Include CCCD info for verification on server
       };
 
       console.log('Shop data to send:', shopData);
