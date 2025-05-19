@@ -23,8 +23,31 @@ export const productApi = {
     return dataJson;
   },
 
+  searchProducts: async ({ productName = "", page = 0, size = 12 }) => {
+    try {
+      const url = `/api/products/search?page=${page}&size=${size}&productName=${encodeURIComponent(productName)}`;
+      
+      const response = await fetch(url, {
+        method: "GET",
+        headers: {
+          'Content-Type': 'application/json',
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to search products");
+      }
+
+      return await response.json();
+    } catch (error) {
+      console.error("Error searching products:", error);
+      // Fallback to empty results
+      return { content: [], totalPages: 0, totalElements: 0 };
+    }
+  },
+
   getProduct: async (id) => {
     // Trong tương lai sẽ thay bằng API call thực tế
     return getProduct(id);
   }
-}; 
+};

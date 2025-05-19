@@ -49,7 +49,7 @@ export default function HomePage() {
     const query = searchRef.current.value;
     if (query) {
       // Redirect to search page with query
-      router.push(`/search?query=${encodeURIComponent(query)}`);
+      router.push(`/search1?query=${encodeURIComponent(query)}`);
       // window.location.href = `/search?query=${encodeURIComponent(query)}`;
     }
   };
