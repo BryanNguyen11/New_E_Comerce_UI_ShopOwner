@@ -284,7 +284,7 @@ export default function HomePage() {
             <img
               src={bannerImages[currentBanner]}
               alt="Main Banner"
-              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[415px] object-cover"
+              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[215px] object-cover"
             />
             {/* Nút chuyển slide */}
             <button
@@ -318,12 +318,12 @@ export default function HomePage() {
             <img
               src={bannerImages[(currentBanner + 1) % bannerImages.length]}
               alt="Food Banner"
-              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[200px] object-cover"
+              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[100px] object-cover"
             />
             <img
               src={bannerImages[(currentBanner + 2) % bannerImages.length]}
               alt="YouTube Banner"
-              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[200px] object-cover"
+              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[100px] object-cover"
             />
           </div>
         </div>
