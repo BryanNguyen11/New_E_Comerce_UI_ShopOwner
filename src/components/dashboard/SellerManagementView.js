@@ -69,7 +69,54 @@ const SellerManagementView = () => {
     // eslint-disable-next-line
   }, [user, authState.token]);
 
-  const handleEdit = () => setEditing(true);
+  // Sửa lại: Nút "Lưu thay đổi" sẽ gọi đúng API backend thật (không qua route proxy), đúng yêu cầu
+  const handleEdit = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const values = form.getFieldsValue();
+      // Gọi API proxy nội bộ Next.js, không gọi trực tiếp backend
+      const res = await fetch(`/api/vendors/${user.userId}/shop`, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${authState.token}`,
+        },
+        body: JSON.stringify({
+          shopName: values.shopName,
+          shopDescription: values.shopDescription,
+        }),
+      });
+      const text = await res.text();
+      if (text.trim().startsWith("<!DOCTYPE html") || text.trim().startsWith("<html")) {
+        if (res.status === 401 || res.status === 403 || (res.status >= 300 && res.status < 400)) {
+          window.location.href = "/login";
+          return;
+        } else {
+          throw new Error("Phiên đăng nhập đã hết hoặc có lỗi hệ thống. Vui lòng đăng nhập lại.");
+        }
+      }
+      let data;
+      try {
+        data = text ? JSON.parse(text) : {};
+      } catch (e) {
+        throw new Error("Dữ liệu trả về không hợp lệ");
+      }
+      if (!res.ok) throw new Error(data.message || "Cập nhật thất bại");
+      setShopData(data);
+      form.setFieldsValue({
+        shopName: data.shopName || `Shop của ${data.fullName || data.username}`,
+        shopDescription: data.shopDescription || "Chưa có mô tả",
+      });
+      message.success("Cập nhật thành công");
+    } catch (err) {
+      setError(err.message);
+      message.error(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCancel = () => {
     setEditing(false);
     if (shopData) {
@@ -79,6 +126,7 @@ const SellerManagementView = () => {
       });
     }
   };
+
   const handleSave = async (values) => {
     if (!user?.userId || !authState?.token) return;
     try {
@@ -148,8 +196,11 @@ const SellerManagementView = () => {
       <Form
         form={form}
         layout="vertical"
-        onFinish={handleSave}
-        disabled={false} // Cho phép thao tác form kể cả khi không ở chế độ editing
+        initialValues={shopData ? {
+          shopName: shopData.shopName || `Shop của ${shopData.fullName || shopData.username}`,
+          shopDescription: shopData.shopDescription || "Chưa có mô tả",
+        } : {}}
+        disabled={false}
       >
         <Form.Item
           label="Tên shop"
@@ -166,18 +217,9 @@ const SellerManagementView = () => {
           <Input.TextArea rows={3} placeholder="Mô tả shop" />
         </Form.Item>
         <div className="flex gap-2 mt-4">
-          {editing ? (
-            <>
-              <Button type="primary" icon={<SaveOutlined />} htmlType="submit">
-                Lưu
-              </Button>
-              <Button onClick={handleCancel}>Hủy</Button>
-            </>
-          ) : (
-            <Button icon={<EditOutlined />} onClick={handleEdit} type="default">
-              Sửa thông tin
-            </Button>
-          )}
+          <Button icon={<EditOutlined />} onClick={handleEdit} type="primary">
+            Lưu thay đổi
+          </Button>
         </div>
       </Form>
     </div>
