@@ -23,10 +23,22 @@ import {
   FaComments,
   FaFileInvoice,
 } from "react-icons/fa";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { mockConversations } from "@/data/mockData";
 import AuthStatus from "@/components/AuthStatus";
 import { useRouter } from 'next/navigation';
+
+// Danh sách ảnh banner (có thể tự động lấy từ public/images/banner nếu build-time, ở đây hardcode)
+const bannerImages = [
+  "/images/banner/main-banner.jpg",
+  "/images/banner/flash-sale-banner.jpg",
+  "/images/banner/sub-banner-1.jpg",
+  "/images/banner/sub-banner-2.jpg",
+  "/images/banner/49601b406491a8eae318bebc541bf8ca.jpg",
+  "/images/banner/89bf8e3eef57a1034a4786da47d79d15.jpg",
+  "/images/banner/f5894834d664f6ca42dc6aa2d9d5bac4.jpg",
+  "/images/banner/f9746c1ec6a7e39f232a382017e3fb55.jpg",
+];
 
 export default function HomePage() {
   const { user, authState } = useAuth();
@@ -38,6 +50,7 @@ export default function HomePage() {
   const [isChatPopupVisible, setChatPopupVisible] = useState(false);
   const [activeChat, setActiveChat] = useState(null);
   const searchRef = useRef(null);
+  const [currentBanner, setCurrentBanner] = useState(0);
 
   const router = useRouter();
 
@@ -53,6 +66,14 @@ export default function HomePage() {
       // window.location.href = `/search?query=${encodeURIComponent(query)}`;
     }
   };
+
+  // Tự động chuyển slide mỗi 4 giây
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentBanner((prev) => (prev + 1) % bannerImages.length);
+    }, 4000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="bg-gray-100 min-h-screen">
@@ -259,23 +280,50 @@ export default function HomePage() {
       {/* Banner Section */}
       <div className="container mx-auto px-4 py-4">
         <div className="grid grid-cols-12 gap-4">
-          <div className="col-span-8">
+          <div className="col-span-8 relative">
             <img
-              src="/images/banner/main-banner.jpg"
+              src={bannerImages[currentBanner]}
               alt="Main Banner"
-              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity"
+              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[215px] object-cover"
             />
+            {/* Nút chuyển slide */}
+            <button
+              className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-gray-700 rounded-full p-2 shadow"
+              onClick={() => setCurrentBanner((prev) => (prev - 1 + bannerImages.length) % bannerImages.length)}
+              aria-label="Previous banner"
+            >
+              &#8592;
+            </button>
+            <button
+              className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/70 hover:bg-white text-gray-700 rounded-full p-2 shadow"
+              onClick={() => setCurrentBanner((prev) => (prev + 1) % bannerImages.length)}
+              aria-label="Next banner"
+            >
+              &#8594;
+            </button>
+            {/* Dots indicator */}
+            <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-2">
+              {bannerImages.map((_, idx) => (
+                <span
+                  key={idx}
+                  className={`inline-block w-3 h-3 rounded-full ${idx === currentBanner ? 'bg-[#05fa80]' : 'bg-white/70 border border-gray-300'}`}
+                  onClick={() => setCurrentBanner(idx)}
+                  style={{ cursor: 'pointer' }}
+                ></span>
+              ))}
+            </div>
           </div>
           <div className="col-span-4 space-y-4">
+            {/* Hiển thị 2 banner tiếp theo dạng nhỏ */}
             <img
-              src="/images/banner/main-banner.jpg"
+              src={bannerImages[(currentBanner + 1) % bannerImages.length]}
               alt="Food Banner"
-              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity"
+              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[100px] object-cover"
             />
             <img
-              src="/images/banner/main-banner.jpg"
+              src={bannerImages[(currentBanner + 2) % bannerImages.length]}
               alt="YouTube Banner"
-              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity"
+              className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity h-[100px] object-cover"
             />
           </div>
         </div>

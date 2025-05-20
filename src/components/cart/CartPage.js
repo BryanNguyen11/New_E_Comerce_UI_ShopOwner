@@ -752,7 +752,7 @@ export default function CartPage() {
             >
               <FaArrowLeft /> Trở về trang chủ
             </Link>
-            <h1 className="text-xl font-bold">Giỏ hàng của bạn</h1>
+            <h1 className="text-xl font-bold text-black">Giỏ hàng của bạn</h1>
           </div>
         </div>
       </div>
@@ -770,7 +770,7 @@ export default function CartPage() {
                 <>
                   <div className="bg-white rounded-md shadow-sm p-4 mb-4">
                     <div className="flex justify-between items-center mb-4">
-                      <h2 className="font-bold text-lg">
+                      <h2 className="font-bold text-lg text-black">
                         Sản phẩm trong giỏ hàng ({cartItems.length})
                       </h2>
                     </div>
@@ -820,7 +820,7 @@ export default function CartPage() {
                       >
                         <FaAngleLeft /> Quay lại giỏ hàng
                       </button>
-                      <h2 className="font-bold text-lg">
+                      <h2 className="font-bold text-lg  text-black">
                         Chọn Voucher theo cửa hàng
                       </h2>
                     </div>
@@ -831,7 +831,7 @@ export default function CartPage() {
                           key={vendorId}
                           className="mb-6 border rounded-md overflow-hidden"
                         >
-                          <div className="bg-gray-50 p-3 border-b">
+                          <div className="bg-gray-50 p-3 border-b text-black">
                             <h3 className="font-medium">{vendor.vendorName}</h3>
                             <p className="text-sm text-gray-500">
                               {vendor.items.length} sản phẩm - Tổng:{" "}
@@ -841,7 +841,7 @@ export default function CartPage() {
 
                           <div className="p-3">
                             <div className="mb-3">
-                              <h4 className="text-sm font-medium mb-2">
+                              <h4 className="text-sm font-medium mb-2 text-black">
                                 Sản phẩm đã chọn:
                               </h4>
                               <div className="flex flex-col gap-2">
@@ -850,11 +850,11 @@ export default function CartPage() {
                                     key={item.cartDetailId}
                                     className="flex items-center gap-2 bg-gray-50 p-2 rounded justify-between"
                                   >
-                                    <div className="flex gap-2 items-center">
+                                    <div className="flex gap-2 items-center text-black">
                                       <img
                                         src={item.product.coverImage}
                                         alt={item.product.productName}
-                                        className="w-8 h-8 object-cover rounded"
+                                        className="w-8 h-8 object-cover rounded "
                                       />
                                       <span className="text-xs">
                                         {item.product.productName.substring(
@@ -864,7 +864,7 @@ export default function CartPage() {
                                         ...
                                       </span>
                                     </div>
-                                    <div className="flex gap-2 items-center">
+                                    <div className="flex gap-2 items-center text-black">
                                       <span className="text-xs text-gray-500">
                                         {item.quantity} x{" "}
                                         {item.product.price.toLocaleString()}₫
@@ -881,7 +881,7 @@ export default function CartPage() {
                               </div>
                             </div>
 
-                            <h4 className="text-sm font-medium mb-2">
+                            <h4 className="text-sm font-medium mb-2 text-black">
                               Vouchers khả dụng:
                             </h4>
                             <div className="space-y-2">
@@ -906,7 +906,7 @@ export default function CartPage() {
                                     }`}
                                   >
                                     <div>
-                                      <h5 className="font-medium">
+                                      <h5 className="font-medium bg-gradient-to-r from-[#05fa80] via-[#8d57c7] to-[#53a0ed] bg-clip-text text-transparent">
                                         {voucher.voucherName}
                                       </h5>
                                       <p className="text-sm text-gray-600">
@@ -969,12 +969,12 @@ export default function CartPage() {
                     >
                       <FaAngleLeft /> Quay lại chọn voucher
                     </button>
-                    <h2 className="font-bold text-lg">Thanh toán</h2>
+                    <h2 className="font-bold text-lg text-black">Thanh toán</h2>
                   </div>
 
                   {/* Address selection section */}
                   <div className="border-b pb-6 mb-6">
-                    <h3 className="font-semibold text-lg mb-4">
+                    <h3 className="font-semibold text-lg mb-4 text-black">
                       Địa chỉ giao hàng
                     </h3>
 
@@ -994,7 +994,7 @@ export default function CartPage() {
                         >
                           <div className="flex justify-between">
                             <div className="flex gap-2 items-center">
-                              <span className="font-medium">
+                              <span className="font-medium text-black">
                                 {address.recipientName}
                               </span>
                               <span className="text-gray-500">|</span>
@@ -1047,8 +1047,8 @@ export default function CartPage() {
                         <span className="text-xl">+</span> Thêm địa chỉ mới
                       </button>
                     ) : (
-                      <div className="border rounded-md p-4 mt-4">
-                        <h4 className="font-medium mb-3">Thêm địa chỉ mới</h4>
+                      <div className="border rounded-md p-4 mt-4 ">
+                        <h4 className="font-medium mb-3 text-black">Thêm địa chỉ mới</h4>
                         <div className="space-y-3">
                           <div>
                             <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -1063,12 +1063,12 @@ export default function CartPage() {
                                   recipientName: e.target.value,
                                 })
                               }
-                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-black"
                               placeholder="Nhập họ tên người nhận"
                             />
                           </div>
                           <div>
-                            <label className="block text-sm font-medium text-gray-700 mb-1">
+                            <label className="block text-sm font-medium text-gray-700 mb-1 ">
                               Số điện thoại
                             </label>
                             <input
@@ -1080,7 +1080,7 @@ export default function CartPage() {
                                   recipientPhone: e.target.value,
                                 })
                               }
-                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-black"
                               placeholder="Nhập số điện thoại"
                             />
                           </div>
@@ -1096,7 +1096,7 @@ export default function CartPage() {
                                   recipientAddress: e.target.value,
                                 })
                               }
-                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm"
+                              className="w-full border border-gray-300 rounded-md px-3 py-2 text-sm text-black"
                               placeholder="Nhập địa chỉ cụ thể"
                               rows="3"
                             />
@@ -1120,7 +1120,7 @@ export default function CartPage() {
                                   }
                                   className="h-4 w-4 text-blue-600"
                                 />
-                                <span className="ml-2 text-sm">Có</span>
+                                <span className="ml-2 text-sm text-black">Có</span>
                               </label>
                               <label className="inline-flex items-center">
                                 <input
@@ -1136,14 +1136,14 @@ export default function CartPage() {
                                   }
                                   className="h-4 w-4 text-blue-600"
                                 />
-                                <span className="ml-2 text-sm">Không</span>
+                                <span className="ml-2 text-sm text-black">Không</span>
                               </label>
                             </div>
                           </div>
                           <div className="flex justify-end gap-2 mt-4">
                             <button
                               onClick={() => setShowAddAddressForm(false)}
-                              className="px-3 py-1.5 border border-gray-300 text-sm rounded-md hover:bg-gray-100"
+                              className="px-3 py-1.5 border border-red-600 text-sm rounded-md hover:bg-gray-100 text-red-600"
                             >
                               Hủy
                             </button>
@@ -1186,14 +1186,14 @@ export default function CartPage() {
 
                   {/* Order summary for review */}
                   <div>
-                    <h3 className="font-semibold text-lg mb-4">
+                    <h3 className="font-semibold text-lg mb-4 text-black">
                       Kiểm tra lại đơn hàng
                     </h3>
 
                     {Object.entries(groupItemsByVendor).map(
                       ([vendorId, vendor]) => (
                         <div key={vendorId} className="mb-4 border-b pb-4">
-                          <div className="font-medium mb-2">
+                          <div className="font-medium mb-2 text-black">
                             {vendor.vendorName}
                           </div>
                           <div className="space-y-3">
@@ -1205,10 +1205,10 @@ export default function CartPage() {
                                 <img
                                   src={item.product.coverImage}
                                   alt={item.product.productName}
-                                  className="w-16 h-16 object-cover rounded"
+                                  className="w-16 h-16 object-cover rounded "
                                 />
                                 <div className="flex-1">
-                                  <div className="font-medium">
+                                  <div className="font-medium text-black">
                                     {item.product.productName}
                                   </div>
                                   <div className="text-gray-500 text-sm">
@@ -1266,11 +1266,11 @@ export default function CartPage() {
             {/* Order summary (right side) */}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-md shadow-sm p-4 sticky top-4">
-                <h2 className="font-bold text-lg mb-4">Thông tin đơn hàng</h2>
+                <h2 className="font-bold text-lg mb-4 text-black">Thông tin đơn hàng</h2>
 
                 {step === "cart" && (
                   <div className="space-y-3 mb-4">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-black">
                       <span>Tạm tính ({selectedItems.length} sản phẩm):</span>
                       <span>{selectedItemsTotal.toLocaleString()}₫</span>
                     </div>
@@ -1279,7 +1279,7 @@ export default function CartPage() {
 
                 {(step === "voucher" || step === "payment") && (
                   <div className="space-y-3 mb-4">
-                    <div className="flex justify-between">
+                    <div className="flex justify-between text-black">
                       <span>Tạm tính ({selectedItems.length} sản phẩm):</span>
                       <span>{selectedItemsTotal.toLocaleString()}₫</span>
                     </div>
@@ -1291,8 +1291,8 @@ export default function CartPage() {
                       </div>
                     )}
 
-                    <div className="border-t pt-3 font-bold flex justify-between">
-                      <span>Tổng cộng:</span>
+                    <div className="border-t pt-3 font-bold flex justify-between ">
+                      <span className="text-red-600 text-xl">Tổng cộng:</span>
                       <span className="text-red-600 text-xl">
                         {(
                           selectedItemsTotal - calculateDiscounts()
@@ -1303,7 +1303,7 @@ export default function CartPage() {
 
                     {Object.entries(selectedVouchers).length > 0 && (
                       <div className="bg-gray-50 p-3 rounded-md mt-2">
-                        <h3 className="text-sm font-medium mb-2">
+                        <h3 className="text-sm font-medium mb-2 text-black">
                           Voucher đã chọn:
                         </h3>
                         <ul className="space-y-1 text-sm">
@@ -1328,9 +1328,9 @@ export default function CartPage() {
                               return (
                                 <li
                                   key={voucherId}
-                                  className="flex justify-between"
+                                  className="flex justify-between bg-gradient-to-r from-[#05fa80] via-[#8d57c7] to-[#53a0ed] bg-clip-text text-transparent"
                                 >
-                                  <span>{vendorGroup.vendorName}:</span>
+                                  <span>{voucher.voucherName}:</span>
                                   <span className="text-green-600">
                                     -{discountValue.toLocaleString()}₫
                                   </span>
@@ -1447,12 +1447,12 @@ export default function CartPage() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-500">
+                  <a href="#" className="hover:text-blue-500 text-black">
                     Thanh Toán
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:text-blue-500">
+                  <a href="#" className="hover:text-blue-500 text-black">
                     Vận Chuyển
                   </a>
                 </li>

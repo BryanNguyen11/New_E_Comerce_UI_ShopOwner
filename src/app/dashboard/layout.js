@@ -43,7 +43,18 @@ export default function DashboardLayout({ children }) {
             {/* Sử dụng Image component của Next.js nếu có thể */}
             <img src="/images/logo.png" alt="Shopee Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="text-[#ee4d2d] font-bold text-xl">KANBAN</span>
+          <span
+            className="font-bold text-xl"
+            style={{
+              background: 'linear-gradient(90deg, #05fa80 0%, #8d57c7 64%, #53a0ed 100%)',
+              WebkitBackgroundClip: 'text',
+              WebkitTextFillColor: 'transparent',
+              backgroundClip: 'text',
+              color: 'transparent',
+            }}
+          >
+            SHOPNOW
+          </span>
         </div>
 
         {/* Navigation Items */}

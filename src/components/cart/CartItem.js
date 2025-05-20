@@ -4,7 +4,7 @@ import { FaMinus, FaPlus, FaTrash } from "react-icons/fa";
 const CartItem = ({item, selectedItems, toggleSelectItem, handleRemoveItem, handleQuantityChange}) => {
   return (
     <div key={item.cartDetailId} className="flex border-b py-4 last:border-b-0">
-      <div className="flex items-center mr-3">
+      <div className="flex items-center mr-3 text-black">
         <input
           type="checkbox"
           checked={selectedItems.includes(item.cartDetailId)}
@@ -19,7 +19,7 @@ const CartItem = ({item, selectedItems, toggleSelectItem, handleRemoveItem, hand
       />
       <div className="flex-1">
         <div className="flex justify-between">
-          <h3 className="font-medium">{item.product.productName}</h3>
+          <h3 className="font-medium text-black">{item.product.productName}</h3>
           <button
             onClick={() => handleRemoveItem(item.cartDetailId)}
             className="text-red-500 hover:text-red-700"
@@ -36,20 +36,20 @@ const CartItem = ({item, selectedItems, toggleSelectItem, handleRemoveItem, hand
           <div className="text-red-600 font-medium">
             {item.product.price.toLocaleString()}₫
           </div>
-          <div className="flex items-center border border-gray-300 rounded">
+          <div className="flex items-center border border-black rounded">
             <button
               onClick={() => handleQuantityChange(item.cartDetailId, -1)}
-              className="px-2 py-1 hover:bg-gray-100"
+              className="px-2 py-1 hover:bg-gray-100  text-black"
               aria-label="Giảm số lượng"
             >
               <FaMinus size={12} />
             </button>
-            <span className="px-4 py-1 border-l border-r border-gray-300">
+            <span className="px-4 py-1 border-l border-r text-black">
               {item.quantity}
             </span>
             <button
               onClick={() => handleQuantityChange(item.cartDetailId, 1)}
-              className="px-2 py-1 hover:bg-gray-100"
+              className="px-2 py-1 hover:bg-gray-100  text-black"
               aria-label="Tăng số lượng"
             >
               <FaPlus size={12} />

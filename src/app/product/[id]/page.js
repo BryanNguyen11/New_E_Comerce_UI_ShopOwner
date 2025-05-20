@@ -112,20 +112,7 @@ export default function ProductDetail() {
       {/* Breadcrumb */}
       <div className="bg-white py-2">
         <div className="container mx-auto px-4">
-          <div className="text-sm">
-            <Link href="/" className="text-[#0055AA] hover:opacity-80">
-              Shopee
-            </Link>
-            <span className="mx-1">›</span>
-            <Link
-              href="/category/thoi-trang"
-              className="text-[#0055AA] hover:opacity-80"
-            >
-              Thời Trang
-            </Link>
-            <span className="mx-1">›</span>
-            <span className="text-black">{product.productName}</span>
-          </div>
+          
         </div>
       </div>
 
