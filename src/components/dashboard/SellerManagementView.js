@@ -187,7 +187,6 @@ const SellerManagementView = () => {
   return (
     <div className="max-w-xl mx-auto bg-white rounded-lg shadow-md p-8 mt-8">
       <div className="flex items-center mb-6 gap-4">
-        <img src="/images/logo.png" alt="Shop Logo" className="w-16 h-16 rounded-full border" />
         <div>
           <h1 className="text-2xl font-bold text-gray-800 mb-1">Quản lý Shop</h1>
           <p className="text-gray-500 text-sm">Cập nhật thông tin shop của bạn</p>
