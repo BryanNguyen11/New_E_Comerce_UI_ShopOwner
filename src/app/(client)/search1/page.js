@@ -7,12 +7,15 @@ import { useAuth } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Link from "next/link";
+import { FaStar } from "react-icons/fa";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
   const { addToCart } = useContext(OrderContext);
   const { authState } = useAuth();
-  const [searchQuery, setSearchQuery] = useState(searchParams.get("query") || "");
+  const [searchQuery, setSearchQuery] = useState(
+    searchParams.get("query") || ""
+  );
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -33,7 +36,9 @@ export default function SearchPage() {
 
   const formatVND = (value) => {
     if (value === "" || isNaN(value)) return "";
-    return Number(value).toLocaleString("vi-VN", { minimumFractionDigits: 0 }).replace(/₫/g, "");
+    return Number(value)
+      .toLocaleString("vi-VN", { minimumFractionDigits: 0 })
+      .replace(/₫/g, "");
   };
 
   const parseVND = (value) => {
@@ -48,8 +53,10 @@ export default function SearchPage() {
     params.append("productName", query.trim() || "");
     params.append("page", pageNum);
     params.append("size", 60);
-    if (filters.priceRange.min) params.append("minPrice", filters.priceRange.min);
-    if (filters.priceRange.max) params.append("maxPrice", filters.priceRange.max);
+    if (filters.priceRange.min)
+      params.append("minPrice", filters.priceRange.min);
+    if (filters.priceRange.max)
+      params.append("maxPrice", filters.priceRange.max);
     if (filters.condition !== null) params.append("isNew", filters.condition);
     if (filters.rating > 0) params.append("minRating", filters.rating);
     // Không gửi sortKey để tránh lỗi thiếu index
@@ -89,19 +96,25 @@ export default function SearchPage() {
       const url = buildSearchUrl(currentPage, searchQuery);
       console.log("Search URL:", url);
       console.log("Auth Token:", authState.token);
-      const headers = authState.token ? { Authorization: `Bearer ${authState.token}` } : {};
+      const headers = authState.token
+        ? { Authorization: `Bearer ${authState.token}` }
+        : {};
       const response = await fetch(url, { headers });
       console.log("Response Status:", response.status);
-      
+
       if (!response.ok) {
         const errorData = await response.json();
         console.error("API Error Response:", errorData);
-        throw new Error(`HTTP error! Status: ${response.status}, Message: ${errorData.detail || "Không rõ"}`);
+        throw new Error(
+          `HTTP error! Status: ${response.status}, Message: ${
+            errorData.detail || "Không rõ"
+          }`
+        );
       }
-      
+
       const data = await response.json();
       console.log("API Response:", data);
-      
+
       if (!data.content || !Array.isArray(data.content)) {
         console.warn("API response content is invalid or empty:", data);
         setProducts([]);
@@ -110,7 +123,7 @@ export default function SearchPage() {
         setError("Không tìm thấy sản phẩm phù hợp.");
         return;
       }
-      
+
       const mappedProducts = data.content.map((item) => ({
         id: item.productId,
         name: item.productName,
@@ -120,16 +133,19 @@ export default function SearchPage() {
         isNew: item.new,
         salesCount: item.soldCount,
       }));
-      
+
       // Sắp xếp sản phẩm trên frontend
       const sortedProducts = sortProducts(mappedProducts, sortOption);
-      
+
       setProducts(sortedProducts);
       setTotalProducts(data.totalElements || 0);
       setTotalPages(data.totalPages || 1);
-      
+
       if (sortedProducts.length === 0 && data.totalElements > 0) {
-        console.warn("No products after sorting, possible issue with data:", sortOption);
+        console.warn(
+          "No products after sorting, possible issue with data:",
+          sortOption
+        );
         setError("Không tìm thấy sản phẩm phù hợp với tiêu chí sắp xếp.");
       }
     } catch (err) {
@@ -141,28 +157,35 @@ export default function SearchPage() {
   };
 
   useEffect(() => {
-  const newQuery = searchParams.get("query") || "";
-  if (newQuery !== searchQuery) {
-    setSearchQuery(newQuery);
-    // Reset các giá trị khác khi tìm kiếm mới
-    setCurrentPage(0);
-    setSortOption("");
-    setFilters({
-      priceRange: { min: "", max: "" },
-      condition: null,
-      rating: 0,
-      locations: [],
-    });
-    setDisplayPrice({
-      min: "",
-      max: "",
-    });
-  }
-}, [searchParams]);
+    const newQuery = searchParams.get("query") || "";
+    if (newQuery !== searchQuery) {
+      setSearchQuery(newQuery);
+      // Reset các giá trị khác khi tìm kiếm mới
+      setCurrentPage(0);
+      setSortOption("");
+      setFilters({
+        priceRange: { min: "", max: "" },
+        condition: null,
+        rating: 0,
+        locations: [],
+      });
+      setDisplayPrice({
+        min: "",
+        max: "",
+      });
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     searchProducts();
-  }, [searchQuery, sortOption, filters, currentPage, authState.token, searchParams]);
+  }, [
+    searchQuery,
+    sortOption,
+    filters,
+    currentPage,
+    authState.token,
+    searchParams,
+  ]);
 
   const handleAddToCart = (product) => {
     if (!authState.isAuthenticated) {
@@ -270,11 +293,15 @@ export default function SearchPage() {
               </select>
             </div>
 
-            {loading && <p className="text-center text-gray-500">Đang tải...</p>}
+            {loading && (
+              <p className="text-center text-gray-500">Đang tải...</p>
+            )}
             {error && <p className="text-center text-red-500">{error}</p>}
 
             {!loading && !error && products.length === 0 && (
-              <p className="text-center text-gray-500">Không tìm thấy sản phẩm nào.</p>
+              <p className="text-center text-gray-500">
+                Không tìm thấy sản phẩm nào.
+              </p>
             )}
 
             {!loading && !error && products.length > 0 && (
@@ -290,17 +317,34 @@ export default function SearchPage() {
                     >
                       <Link href={`/product/${product.id}`}>
                         <img
-                          src={product.image || "/images/product-placeholder.jpg"}
+                          src={
+                            product.image || "/images/product-placeholder.jpg"
+                          }
                           alt={product.name}
                           className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
                         />
                       </Link>
                       <h3 className="text-sm font-medium text-gray-700 truncate">
-                        <Link href={`/product/${product.id}`}>{product.name}</Link>
+                        <Link href={`/product/${product.id}`}>
+                          {product.name}
+                        </Link>
                       </h3>
                       <p className="text-red-500 font-bold mt-2">
                         {(product.price || 0).toLocaleString("vi-VN")} ₫
                       </p>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, index) => (
+                          <FaStar
+                            key={index}
+                            className={
+                              index < Math.floor(product.rating || 0)
+                                ? "text-[#ee4d2d]"
+                                : "text-gray-300"
+                            }
+                            size={12}
+                          />
+                        ))}
+                      </div>
                       <button
                         onClick={() => handleAddToCart(product)}
                         className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
@@ -351,8 +395,12 @@ export default function SearchPage() {
                       onChange={handleFilterChange("minRatings")}
                       className="mr-2"
                     />
-                    <span className="text-yellow-500">{'★'.repeat(rating)}</span>
-                    <span className="text-gray-700 ml-1">{rating} sao trở lên</span>
+                    <span className="text-yellow-500">
+                      {"★".repeat(rating)}
+                    </span>
+                    <span className="text-gray-700 ml-1">
+                      {rating} sao trở lên
+                    </span>
                   </label>
                 ))}
               </div>
@@ -416,4 +464,3 @@ export default function SearchPage() {
     </div>
   );
 }
-
