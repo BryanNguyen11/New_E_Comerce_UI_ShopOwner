@@ -2,7 +2,7 @@
 
 import { useAuth } from "@/context/AuthContext";
 import { useProducts } from "@/hooks/useProducts";
-import { ProductCard } from "@/components/product/ProductCard";
+import ProductCard from "@/components/product/ProductCard";
 import InfiniteScroll from "react-infinite-scroll-component";
 import Link from "next/link";
 import {
@@ -27,6 +27,8 @@ import { useRef, useState, useEffect } from "react";
 import { mockConversations } from "@/data/mockData";
 import AuthStatus from "@/components/AuthStatus";
 import { useRouter } from 'next/navigation';
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
 
 // Danh sách ảnh banner (có thể tự động lấy từ public/images/banner nếu build-time, ở đây hardcode)
 const bannerImages = [
@@ -56,10 +58,9 @@ export default function HomePage() {
   useEffect(() => {
     if (authState.isAuthenticated && authState.token && !authState.isLoading && !hasLoaded) {
       console.log('Calling loadProducts, token:', authState.token);
-      loadProducts();
       setHasLoaded(true);
     }
-  }, [authState.isAuthenticated, authState.token, authState.isLoading, hasLoaded, loadProducts]);
+  }, [authState.isAuthenticated, authState.token, authState.isLoading, hasLoaded]);
 
   // Tự động chuyển slide mỗi 4 giây
   useEffect(() => {
@@ -128,25 +129,28 @@ export default function HomePage() {
       <main className="container mx-auto px-4 py-8 flex-grow">
         <h1 className="text-2xl font-bold text-gray-700 mb-6">Sản phẩm nổi bật</h1>
 
-        {loading && <p className="text-center text-gray-500">Đang tải...</p>}
-        {error && <p className="text-center text-red-500">{error}</p>}
-
-        {!loading && !error && products.length === 0 && (
-          <p className="text-center text-gray-500">Không tìm thấy sản phẩm nào.</p>
-        )}
-
-        {!loading && !error && products.length > 0 && (
-          <>
-            <div className="mb-4 text-gray-600">
-              Tìm thấy {totalProducts} sản phẩm
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <InfiniteScroll
+            dataLength={products.length}
+            next={loadMoreProducts}
+            hasMore={hasMore}
+            loader={
+              <div className="text-center py-4">
+                <div className="inline-block animate-spin rounded-full h-8 w-8 border-4 border-blue-500 border-t-transparent"></div>
+                <p className="text-black mt-2">Đang tải thêm sản phẩm...</p>
+              </div>
+            }
+            endMessage={
+              <p className="text-center text-gray-500 py-4">
+                Đã hiển thị tất cả sản phẩm
+              </p>
+            }
+          >
+            <div className="grid grid-cols-6 gap-4">
               {products.map((product) => (
-                <ProductCard key={product.id} product={product} />
+                <ProductCard key={product.productId} product={product} />
               ))}
             </div>
-          </>
-        )}
+          </InfiniteScroll>
       </main>
       <Footer />
     </div>

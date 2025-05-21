@@ -4,7 +4,6 @@ export default async function handler(req, res) {
   }
 
   const url = `${process.env.NEXT_PUBLIC_BACKEND_URL}/api/cart-detail`;
-  console.log("Body: ", req.body);
   fetch(url, {
     method: 'POST',
     headers: {
