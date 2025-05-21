@@ -1,7 +1,7 @@
 'use client'
 import { useState, useEffect } from 'react';
 import { productApi } from '@/services/api/product';
-import { useAuth } from '@/context/AuthContext';
+// import { useAuth } from '@/context/AuthContext';
 
 export const useProducts = (initialPage = 0, limit = 10, token) => {
   const [products, setProducts] = useState([]);
@@ -39,10 +39,12 @@ export const useProducts = (initialPage = 0, limit = 10, token) => {
       setLoading(true);
       const newProducts = await productApi.getProducts(page, limit, token);
 
+      console.log("NEW PRODUCTS", newProducts)
+
       if (page  >= newProducts.totalPages || page >= MAX_PAGES) {
         setHasMore(false);
       } else {
-        setProducts(prev => [...prev, ...newProducts.content]);
+        setProducts(prev => [...prev, ...newProducts?.content || []]);
         setPage(prev => prev + 1);
       }
     } catch (err) {

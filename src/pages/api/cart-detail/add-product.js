@@ -15,6 +15,9 @@ export default async function handler(req, res) {
   })
     .then((response) => {
       if (!response.ok) {
+        response.json().then((errorData) => {
+          console.error('Error response from backend:', errorData);
+        });
         throw new Error('Network response was not ok');
       }
       return response.json();
