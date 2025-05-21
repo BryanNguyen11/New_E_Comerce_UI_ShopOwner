@@ -51,3 +51,4 @@ export default function RouteGuard({ children }) {
   // Only render children if authorized
   return children
 }
+

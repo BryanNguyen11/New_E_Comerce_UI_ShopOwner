@@ -1,3 +1,4 @@
+
 import Keycloak from 'keycloak-js'
 
 const keycloakConfig = {

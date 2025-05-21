@@ -1,6 +1,7 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from '@/context/AuthContext';
+import { OrderProvider } from "@/context/OrderContext";
 
 
 const geistSans = Geist({
@@ -33,13 +34,16 @@ export default function RootLayout({ children }) {
         />
         {/* <meta http-equiv="Content-Security-Policy" content="default-src 'self' https://cdn.ngrok.com 'unsafe-eval' 'unsafe-inline'; font-src 'self' https://assets.ngrok.com;"></meta> */}
       </head>
-      <body
+      <body suppressHydrationWarning={true}
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
+       
         <AuthProvider>
+          <OrderProvider>
           {/* <RouteGuard> */}
             {children}
           {/* </RouteGuard> */}
+          </OrderProvider>s
         </AuthProvider>
       </body>
     </html>

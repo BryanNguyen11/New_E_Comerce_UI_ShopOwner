@@ -76,8 +76,11 @@ export default function OrdersPage() {
   };
 
   const handleCancelOrder = async (orderId) => {
+    console.log("Attempting to cancel order:", orderId);
     try {
-      const response = await fetch(`/api/orders/${orderId}/delete`, {
+      const url = `/api/orders/${orderId}/delete`;
+      console.log("Calling API URL:", url);
+      const response = await fetch(url, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${authState.token}`,
@@ -85,8 +88,12 @@ export default function OrdersPage() {
         },
       });
 
+      console.log("Cancel response status:", response.status);
+      
       if (!response.ok) {
-        throw new Error("Failed to cancel order");
+        const errorText = await response.text();
+        console.error("Error response:", errorText);
+        throw new Error(`Failed to cancel order: ${errorText}`);
       }
 
       message.success("Hủy đơn hàng thành công");

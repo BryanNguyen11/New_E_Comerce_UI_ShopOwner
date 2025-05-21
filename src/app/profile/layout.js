@@ -14,12 +14,14 @@ import {
   FaQuestionCircle,
   FaTwitter,
 } from "react-icons/fa";
+import Footer from "@/components/Footer";
+import Header from "@/components/Header";
 
 const layout = ({ children }) => {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Top Navigation */}
-      <header className="bg-white shadow-md">
+      {/* <header className="bg-white shadow-md">
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center text-gray-700 text-sm py-2">
             <div className="flex gap-6 items-center">
@@ -75,9 +77,11 @@ const layout = ({ children }) => {
             </div>
           </div>
         </div>
-      </header>
+      </header> */}
+      <Header/>
       {children}
-      <footer className="bg-gray-100 mt-8">
+      <Footer/>
+      {/* <footer className="bg-gray-100 mt-8">
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-4 gap-8">
             <div>
@@ -185,7 +189,7 @@ const layout = ({ children }) => {
             <p>&copy; 2025. Tất cả các quyền được bảo lưu.</p>
           </div>
         </div>
-      </footer>
+      </footer> */}
     </div>
   );
 };
