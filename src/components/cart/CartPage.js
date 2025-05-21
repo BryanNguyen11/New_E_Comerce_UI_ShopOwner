@@ -17,6 +17,10 @@ import CartWrapper from "./CartWrapper";
 import CartItem from "./CartItem";
 import { message } from "antd";
 import "@ant-design/v5-patch-for-react-19";
+import Header from "@/components/Header";
+import Footer from "@/components/Footer";
+
+
 
 export default function CartPage() {
   const { user, authState } = useAuth();
@@ -700,48 +704,7 @@ export default function CartPage() {
   return (
     <div className="bg-gray-100 min-h-screen">
       {/* Header */}
-      <div className="bg-white shadow-md">
-        <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center text-gray-700 text-sm py-2">
-            <div className="flex gap-6 items-center">
-              <Link href="/dashboard" className="hover:text-blue-500">
-                Kênh Người Bán
-              </Link>
-              <Link
-                href="/dashboard"
-                className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
-              >
-                Dashboard
-              </Link>
-              <a href="#" className="hover:text-blue-500">
-                Tải ứng dụng
-              </a>
-              <a href="#" className="hover:text-blue-500">
-                Kết nối
-              </a>
-            </div>
-            <div className="flex gap-6 items-center">
-              <a
-                href="#"
-                className="hover:text-blue-500 flex items-center gap-2"
-              >
-                Thông Báo
-              </a>
-              <a
-                href="#"
-                className="hover:text-blue-500 flex items-center gap-2"
-              >
-                Hỗ Trợ
-              </a>
-              <a href="#" className="hover:text-blue-500">
-                Tiếng Việt
-              </a>
-              <AuthStatus />
-            </div>
-          </div>
-        </div>
-      </div>
-
+      <Header />
       {/* Navigation */}
       <div className="bg-white shadow-sm mb-4">
         <div className="container mx-auto px-4 py-4">
@@ -1428,112 +1391,7 @@ export default function CartPage() {
       </div>
 
       {/* Footer */}
-      <footer className="bg-white mt-8 border-t">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-            <div>
-              <h4 className="font-medium mb-4 text-gray-700">
-                CHĂM SÓC KHÁCH HÀNG
-              </h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Trung Tâm Trợ Giúp
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Hướng Dẫn Mua Hàng
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Thanh Toán
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Vận Chuyển
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-4 text-gray-700">VỀ CHÚNG TÔI</h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Giới Thiệu
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Tuyển Dụng
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Điều Khoản
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Chính Sách Bảo Mật
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h4 className="font-medium mb-4 text-gray-700">THANH TOÁN</h4>
-              <div className="grid grid-cols-3 gap-2">
-                <div className="flex items-center justify-center h-10 w-10 bg-gray-100 rounded-md">
-                  Visa
-                </div>
-                <div className="flex items-center justify-center h-10 w-10 bg-gray-100 rounded-md">
-                  MC
-                </div>
-                <div className="flex items-center justify-center h-10 w-10 bg-gray-100 rounded-md">
-                  JCB
-                </div>
-                <div className="flex items-center justify-center h-10 w-10 bg-gray-100 rounded-md">
-                  COD
-                </div>
-                <div className="flex items-center justify-center h-10 w-10 bg-gray-100 rounded-md">
-                  Bank
-                </div>
-                <div className="flex items-center justify-center h-10 w-10 bg-gray-100 rounded-md">
-                  Momo
-                </div>
-              </div>
-            </div>
-            <div>
-              <h4 className="font-medium mb-4 text-gray-700">
-                THEO DÕI CHÚNG TÔI
-              </h4>
-              <ul className="space-y-2 text-sm text-gray-700">
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Facebook
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    Instagram
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:text-blue-500">
-                    LinkedIn
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t mt-8 pt-8 text-center text-sm text-gray-500">
-            <p>© 2025 E-Commerce Shop. Tất cả các quyền được bảo lưu.</p>
-          </div>
-        </div>
-      </footer>
+     <Footer/>
     </div>
   );
 }

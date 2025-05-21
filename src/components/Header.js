@@ -11,12 +11,13 @@ import {
   FaQuestionCircle,
   FaSearch,
   FaComments,
+  FaFileInvoice,
 } from "react-icons/fa";
 import { useAuth } from "@/context/AuthContext";
 import { OrderContext } from "@/context/OrderContext";
 import AuthStatus from "@/components/AuthStatus";
 import { mockConversations } from "@/data/mockData";
-import { useRouter } from "next/navigation"; 
+import { useRouter } from "next/navigation";
 
 export default function Header() {
   const { user } = useAuth();
@@ -24,20 +25,21 @@ export default function Header() {
   const [isChatPopupVisible, setChatPopupVisible] = useState(false);
   const [activeChat, setActiveChat] = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const router = useRouter();
 
-  const router = useRouter(); 
-  const handleSearch = (e) => {
-    e.preventDefault();
-    if (searchTerm.trim()) {
-      router.push(`/search?productName=${encodeURIComponent(searchTerm)}`);
-    }
-  };
   // Tính tổng số lượng sản phẩm trong giỏ hàng
   const cartCount = cart.reduce((sum, item) => sum + item.quantity, 0);
 
   useEffect(() => {
     console.log("User data:", user);
   }, [user]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    if (searchTerm) {
+      router.push(`/search1?query=${encodeURIComponent(searchTerm)}`);
+    }
+  };
 
   const toggleChatPopup = () => {
     setChatPopupVisible(!isChatPopupVisible);
@@ -50,6 +52,9 @@ export default function Header() {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center text-gray-700 text-sm py-2">
             <div className="flex gap-6 items-center">
+              <Link href="/" className="text-gray-700 text-3xl font-bold">
+                <img src="/images/logo.png" alt="Logo" className="h-12" />
+              </Link>
               <Link href="/dashboard" className="hover:text-blue-500">
                 Kênh Người Bán
               </Link>
@@ -59,12 +64,6 @@ export default function Header() {
               >
                 Dashboard
               </Link>
-              <a href="#" className="hover:text-blue-500">
-                Tải ứng dụng
-              </a>
-              <a href="#" className="hover:text-blue-500">
-                Kết nối
-              </a>
               <div className="flex items-center gap-3">
                 <a href="#" className="hover:text-blue-500">
                   <FaFacebook size={16} />
@@ -105,16 +104,18 @@ export default function Header() {
       <div className="bg-gray-100 pb-4">
         <div className="container mx-auto px-4">
           <div className="flex items-center gap-10 py-4">
-            <Link href="/" className="text-gray-700 text-3xl font-bold">
-              <img src="/images/logo.png" alt="Logo" className="h-12" />
-            </Link>
             <form onSubmit={handleSearch} className="flex-1">
               <div className="flex">
                 <input
                   type="text"
-                  placeholder="Tìm sản phẩm, thương hiệu và tên shop"
+                  placeholder="Tìm sản phẩm"
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") {
+                      handleSearch(e);
+                    }
+                  }}
                   className="w-full px-4 py-2 rounded-l-md text-sm bg-white text-gray-700 placeholder-gray-400 border border-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <button
@@ -144,6 +145,14 @@ export default function Header() {
                   className="cursor-pointer text-gray-700 hover:text-blue-500"
                   onClick={toggleChatPopup}
                 />
+              </div>
+              <div className="relative">
+                <Link href="/orders">
+                  <FaFileInvoice
+                    size={24}
+                    className="cursor-pointer text-gray-700 hover:text-blue-500"
+                  />
+                </Link>
               </div>
             </div>
           </div>
@@ -236,3 +245,4 @@ export default function Header() {
     </div>
   );
 }
+
