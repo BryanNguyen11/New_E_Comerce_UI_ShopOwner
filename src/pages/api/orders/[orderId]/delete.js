@@ -1,4 +1,5 @@
 export default async function handler(req, res) {
+  console.log("IN CANCEL ORDER API");
   if (req.method !== 'DELETE') {
     return res.status(405).json({ message: 'Method Not Allowed' });
   }
@@ -16,13 +17,13 @@ export default async function handler(req, res) {
     const response = await fetch(url, {
       method: 'DELETE',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': authHeader,
       },
     });
 
     if (!response.ok) {
       const errorData = await response.json();
+      console.error('Error response from backend:', errorData); 
       return res.status(response.status).json(errorData);
     }
     return res.status(200).send("Order deleted successfully");

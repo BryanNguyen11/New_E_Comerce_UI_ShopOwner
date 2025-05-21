@@ -422,8 +422,6 @@ export default function ProductDetailClient({ id }) {
 
   useEffect(() => {
     if (!authState.token) {
-      message.warning("Vui lòng đăng nhập để xem chi tiết sản phẩm");
-      router.push("/login");
       return;
     }
 
@@ -452,7 +450,7 @@ export default function ProductDetailClient({ id }) {
       if (product?.vendorId && authState.token) {
         try {
           const response = await fetch(
-            `/api/users/vendors/${product.vendorId}`,
+            `/api/users/vendors/${product.vendorId}/info`,
             {
               method: "GET",
               headers: {

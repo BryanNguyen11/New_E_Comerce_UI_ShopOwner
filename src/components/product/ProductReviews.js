@@ -132,7 +132,7 @@ export default function ProductReviews({ productId }) {
     try {
       setLoading(true);
       const response = await fetch(
-        `/api/reviews/product/${productId}?page=${page}&size=${size}`,
+        `/api/reviews/product/${productId}/get?page=${page}&size=${size}`,
         {
           method: "GET",
           headers: {
@@ -189,30 +189,33 @@ export default function ProductReviews({ productId }) {
   };
 
   // Check if user has purchased the product
-  const checkPurchase = async () => {
-    try {
-      const response = await fetch(
-        `/api/orders/check-purchase/${productId}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${authState.token}`,
-          },
-        }
-      );
+  // const checkPurchase = async () => {
+  //   if (authState.token === null) {
+  //     return;
+  //   }
+  //   try {
+  //     const response = await fetch(
+  //       `/api/orders/check-purchase/${productId}`,
+  //       {
+  //         method: "GET",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Authorization: `Bearer ${authState.token}`,
+  //         },
+  //       }
+  //     );
 
-      if (!response.ok) {
-        throw new Error("Failed to check purchase status");
-      }
+  //     if (!response.ok) {
+  //       throw new Error("Failed to check purchase status");
+  //     }
 
-      const data = await response.json();
-      setHasPurchased(data.hasPurchased || false);
-    } catch (err) {
-      console.error("Error checking purchase status:", err);
-      setHasPurchased(false);
-    }
-  };
+  //     const data = await response.json();
+  //     setHasPurchased(data.hasPurchased || false);
+  //   } catch (err) {
+  //     console.error("Error checking purchase status:", err);
+  //     setHasPurchased(false);
+  //   }
+  // };
 
   // Check if user has already reviewed
   const checkExistingReview = async () => {
@@ -284,9 +287,9 @@ export default function ProductReviews({ productId }) {
     if (productId && authState.token) {
       fetchReviews();
       fetchAvgRating();
-      if (user?.userId) {
-        checkPurchase();
-      }
+      // if (user?.userId) {
+      //   checkPurchase();
+      // }
     }
   }, [productId, authState.token, user]);
 
@@ -312,7 +315,8 @@ export default function ProductReviews({ productId }) {
         </div>
       </div>
 
-      {hasPurchased && authState.isAuthenticated && (
+      
+      {/* {hasPurchased && authState.isAuthenticated && (
         <div className="mb-6 bg-white p-4 rounded shadow-sm">
           <h3 className="text-lg font-medium text-black mb-2">
             {existingReview ? "Chỉnh sửa đánh giá" : "Viết đánh giá của bạn"}
@@ -344,8 +348,8 @@ export default function ProductReviews({ productId }) {
             </Form.Item>
           </Form>
         </div>
-      )}
-
+      )} */}
+      
       {reviews.length > 0 ? (
         <div className="space-y-6">
           {reviews.map((review) => (
