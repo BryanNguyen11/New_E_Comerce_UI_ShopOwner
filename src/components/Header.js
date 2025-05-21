@@ -65,7 +65,7 @@ export default function Header() {
                 Dashboard
               </Link>
               <div className="flex items-center gap-3">
-                <a href="#" className="hover:text-blue-500">
+                <a href="https://www.facebook.com/ShopeeVN?locale=vi_VN" className="hover:text-blue-500">
                   <FaFacebook size={16} />
                 </a>
                 <a href="#" className="hover:text-blue-500">
