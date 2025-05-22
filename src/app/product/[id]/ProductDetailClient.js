@@ -496,10 +496,6 @@
 //   );
 // }
 
-<<<<<<< HEAD
-=======
-
->>>>>>> origin/linh
 "use client";
 
 import { useState, useEffect, useContext } from "react";
