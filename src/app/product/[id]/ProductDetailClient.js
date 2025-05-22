@@ -393,10 +393,6 @@
 //   );
 // }
 
-
-
-
-
 "use client";
 
 import { useState, useEffect } from "react";
@@ -586,7 +582,9 @@ export default function ProductDetailClient({ id }) {
               {product.firstCategoryName || "Thời Trang"}
             </Link>
             <span className="mx-1">›</span>
-            <span className="text-black">{product.productName || "Sản phẩm"}</span>
+            <span className="text-black">
+              {product.productName || "Sản phẩm"}
+            </span>
           </div>
         </div>
       </div>
@@ -638,7 +636,9 @@ export default function ProductDetailClient({ id }) {
                     >
                       <img
                         src={img}
-                        alt={`${product.productName || "Sản phẩm"} ${index + 1}`}
+                        alt={`${product.productName || "Sản phẩm"} ${
+                          index + 1
+                        }`}
                         className="w-full h-full object-cover"
                       />
                     </div>
@@ -733,49 +733,55 @@ export default function ProductDetailClient({ id }) {
                   </div>
                 </div>
 
-                {product.firstCategoryName && product.firstCategories?.length > 0 && (
-                  <div className="flex gap-4">
-                    <span className="text-black w-24">{product.firstCategoryName}</span>
-                    <div className="flex flex-wrap gap-2">
-                      {product.firstCategories.map((category, index) => (
-                        <button
-                          key={index}
-                          className={`px-4 py-2 border rounded ${
-                            selectedFirstCategory === category
-                              ? "border-[#ee4d2d] text-[#ee4d2d]"
-                              : "border-gray-300 hover:border-[#ee4d2d]"
-                          }`}
-                          onClick={() => setSelectedFirstCategory(category)}
-                        >
-                          <span className="text-black">{category}</span>
-                        </button>
-                      ))}
+                {product.firstCategoryName &&
+                  product.firstCategories?.length > 0 && (
+                    <div className="flex gap-4">
+                      <span className="text-black w-24">
+                        {product.firstCategoryName}
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {product.firstCategories.map((category, index) => (
+                          <button
+                            key={index}
+                            className={`px-4 py-2 border rounded ${
+                              selectedFirstCategory === category
+                                ? "border-[#ee4d2d] text-[#ee4d2d]"
+                                : "border-gray-300 hover:border-[#ee4d2d]"
+                            }`}
+                            onClick={() => setSelectedFirstCategory(category)}
+                          >
+                            <span className="text-black">{category}</span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {product.secondCategoryName && product.secondCategories?.length > 0 && (
-                  <div className="flex gap-4">
-                    <span className="text-black w-24">{product.secondCategoryName}</span>
-                    <div className="flex flex-wrap gap-2">
-                      {product.secondCategories.map((category, index) => (
-                        <button
-                          key={index}
-                          className={`px-4 py-2 border rounded ${
-                            selectedSecondCategory === category
-                              ? "border-[#ee4d2d] text-[#ee4d2d]"
-                              : "border-gray-300 hover:border-[#ee4d2d]"
-                          }`}
-                          onClick={() => setSelectedSecondCategory(category)}
-                        >
-                          <span className="text-black">{category}</span>
-                        </button>
-                      ))}
+                {product.secondCategoryName &&
+                  product.secondCategories?.length > 0 && (
+                    <div className="flex gap-4">
+                      <span className="text-black w-24">
+                        {product.secondCategoryName}
+                      </span>
+                      <div className="flex flex-wrap gap-2">
+                        {product.secondCategories.map((category, index) => (
+                          <button
+                            key={index}
+                            className={`px-4 py-2 border rounded ${
+                              selectedSecondCategory === category
+                                ? "border-[#ee4d2d] text-[#ee4d2d]"
+                                : "border-gray-300 hover:border-[#ee4d2d]"
+                            }`}
+                            onClick={() => setSelectedSecondCategory(category)}
+                          >
+                            <span className="text-black">{category}</span>
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                <div className="flex items-center gap-4">
+                {/* <div className="flex items-center gap-4">
                   <span className="text-black w-24">Số Lượng</span>
                   <div className="flex items-center">
                     <button
@@ -802,9 +808,52 @@ export default function ProductDetailClient({ id }) {
                       {product.stock || 0} sản phẩm có sẵn
                     </span>
                   </div>
+                </div> */}
+                <div className="flex items-center gap-4">
+                  <span className="text-black w-24">Số Lượng</span>
+                  <div className="flex items-center">
+                    <button
+                      className="w-8 h-8 border border-[#ee4d2d] text-[#ee4d2d] flex items-center justify-center hover:bg-[#fef6f5]"
+                      onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                      disabled={product.stock === 0}
+                    >
+                      -
+                    </button>
+                    <input
+                      type="number"
+                      className="w-16 h-8 border-t border-b border-[#ee4d2d] text-center text-[#ee4d2d]"
+                      value={quantity}
+                      onChange={(e) =>
+                        setQuantity(
+                          Math.max(
+                            1,
+                            Math.min(
+                              product.stock,
+                              parseInt(e.target.value) || 1
+                            )
+                          )
+                        )
+                      }
+                      disabled={product.stock === 0}
+                    />
+                    <button
+                      className="w-8 h-8 border border-[#ee4d2d] text-[#ee4d2d] flex items-center justify-center hover:bg-[#fef6f5]"
+                      onClick={() =>
+                        setQuantity(Math.min(product.stock, quantity + 1))
+                      }
+                      disabled={product.stock === 0}
+                    >
+                      +
+                    </button>
+                    <span className="ml-4 text-black">
+                      {product.stock === 0
+                        ? "Hết hàng"
+                        : `${product.stock} sản phẩm có sẵn`}
+                    </span>
+                  </div>
                 </div>
 
-                <div className="flex gap-4 pt-4">
+                {/* <div className="flex gap-4 pt-4">
                   <button
                     className="flex-1 px-4 py-3 border border-[#ee4d2d] text-[#ee4d2d] flex items-center justify-center gap-2 hover:bg-[#fef6f5]"
                     onClick={() => handleAddToCart(false)}
@@ -818,8 +867,34 @@ export default function ProductDetailClient({ id }) {
                   >
                     Mua Ngay
                   </button>
+                </div> */}
+                <div className="flex gap-4 pt-4">
+                  <button
+                    className={`flex-1 px-4 py-3 border border-[#ee4d2d] text-[#ee4d2d] flex items-center justify-center gap-2 ${
+                      product.stock === 0
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : "hover:bg-[#fef6f5]"
+                    }`}
+                    onClick={() => handleAddToCart(false)}
+                    disabled={product.stock === 0}
+                  >
+                    <i className="fas fa-cart-plus"></i>
+                    Thêm Vào Giỏ Hàng
+                  </button>
+                  <button
+                    className={`flex-1 px-4 py-3 ${
+                      product.stock === 0
+                        ? "bg-gray-400 text-white cursor-not-allowed"
+                        : "bg-[#ee4d2d] text-white hover:bg-[#d73211]"
+                    }`}
+                    onClick={() => handleAddToCart(true)}
+                    disabled={product.stock === 0}
+                  >
+                    {product.stock === 0 ? "Hết hàng" : "Mua Ngay"}
+                  </button>
                 </div>
               </div>
+              {/* </div> */}
 
               {(product.description || product.video) && (
                 <div className="mt-8 pt-8 border-t">
@@ -885,8 +960,6 @@ export default function ProductDetailClient({ id }) {
     </div>
   );
 }
-
-
 
 // 'use client';
 
