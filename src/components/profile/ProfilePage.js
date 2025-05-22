@@ -1170,9 +1170,9 @@ const ProfilePage = () => {
       }
 
       const endpoints = [
-        { type: "customer", url: `/api/users/customers/${user.userId}` },
-        { type: "vendor", url: `/api/users/vendors/${user.userId}` },
-        { type: "user", url: `/api/users/${user.userId}` },
+        { type: "customer", url: `/api/users/customers/${user.userId}/info` },
+        { type: "vendor", url: `/api/users/vendors/${user.userId}/info` },
+        { type: "user", url: `/api/users/${user.userId}/me` },
       ];
 
       let fetchedProfile = null;
@@ -1282,7 +1282,7 @@ const ProfilePage = () => {
         }
       }
 
-      const response = await fetch(`/api/users/customers/${user.userId}`, {
+      const response = await fetch(`/api/users/customers/${user.userId}/info`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -1337,7 +1337,7 @@ const ProfilePage = () => {
 
       setUploading(true);
 
-      const response = await fetch(`/api/users/${user.userId}`, {
+      const response = await fetch(`/api/users/${user.userId}/update`, {
         method: "PUT",
         headers: {
           Authorization: `Bearer ${token}`,
@@ -1447,13 +1447,12 @@ const ProfilePage = () => {
       });
 
       if (!response.ok) {
-        const errorData = await response.json();
         throw new Error(
-          `Failed to update bank account: ${response.status} - ${JSON.stringify(errorData)}`
+          `Failed to update bank account:}`
         );
       }
 
-      const success = await response.json();
+      const success = true;
       if (success) {
         // Fetch updated profile to get latest bank data
         const updatedProfile = await fetchUpdatedProfile();
