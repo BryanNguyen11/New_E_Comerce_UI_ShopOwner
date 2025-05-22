@@ -7,11 +7,7 @@ import { useAuth } from "@/context/AuthContext";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import Link from "next/link";
-// <<<<<<< HEAD
-// import { FaStar } from "react-icons/fa";
-// =======
-import ProductCard from "@/components/product/ProductCard";
-// >>>>>>> 54d0e8d (fix order)
+import { FaStar } from "react-icons/fa";
 
 export default function SearchPage() {
   const searchParams = useSearchParams();
@@ -75,6 +71,8 @@ export default function SearchPage() {
         case "price_desc":
           return (b.price || 0) - (a.price || 0);
         case "latest":
+          // Sử dụng productId làm proxy cho createdAt (vì API không trả createdAt)
+          // Giả định productId là UUID, so sánh chuỗi để gần đúng thứ tự thời gian
           return b.id.localeCompare(a.id);
         case "best_selling":
           return (b.salesCount || 0) - (a.salesCount || 0);
@@ -313,51 +311,47 @@ export default function SearchPage() {
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                   {products.map((product) => (
-// <<<<<<< HEAD
-                    // <div
-                    //   key={product.id}
-                    //   className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
-                    // >
-                    //   <Link href={`/product/${product.id}`}>
-                    //     <img
-                    //       src={
-                    //         product.image || "/images/product-placeholder.jpg"
-                    //       }
-                    //       alt={product.name}
-                    //       className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
-                    //     />
-                    //   </Link>
-                    //   <h3 className="text-sm font-medium text-gray-700 truncate">
-                    //     <Link href={`/product/${product.id}`}>
-                    //       {product.name}
-                    //     </Link>
-                    //   </h3>
-                    //   <p className="text-red-500 font-bold mt-2">
-                    //     {(product.price || 0).toLocaleString("vi-VN")} ₫
-                    //   </p>
-                    //   <div className="flex items-center">
-                    //     {[...Array(5)].map((_, index) => (
-                    //       <FaStar
-                    //         key={index}
-                    //         className={
-                    //           index < Math.floor(product.rating || 0)
-                    //             ? "text-[#ee4d2d]"
-                    //             : "text-gray-300"
-                    //         }
-                    //         size={12}
-                    //       />
-                    //     ))}
-                    //   </div>
-                    //   <button
-                    //     onClick={() => handleAddToCart(product)}
-                    //     className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
-                    //   >
-                    //     Thêm vào giỏ
-                    //   </button>
-                    // </div>
-// =======
-                    <ProductCard key={product.id} product={product} />
-// >>>>>>> 54d0e8d (fix order)
+                    <div
+                      key={product.id}
+                      className="bg-white rounded-lg shadow-md p-4 hover:shadow-lg transition-shadow"
+                    >
+                      <Link href={`/product/${product.id}`}>
+                        <img
+                          src={
+                            product.image || "/images/product-placeholder.jpg"
+                          }
+                          alt={product.name}
+                          className="w-full h-48 object-cover rounded-md mb-4 cursor-pointer"
+                        />
+                      </Link>
+                      <h3 className="text-sm font-medium text-gray-700 truncate">
+                        <Link href={`/product/${product.id}`}>
+                          {product.name}
+                        </Link>
+                      </h3>
+                      <p className="text-red-500 font-bold mt-2">
+                        {(product.price || 0).toLocaleString("vi-VN")} ₫
+                      </p>
+                      <div className="flex items-center">
+                        {[...Array(5)].map((_, index) => (
+                          <FaStar
+                            key={index}
+                            className={
+                              index < Math.floor(product.rating || 0)
+                                ? "text-[#ee4d2d]"
+                                : "text-gray-300"
+                            }
+                            size={12}
+                          />
+                        ))}
+                      </div>
+                      <button
+                        onClick={() => handleAddToCart(product)}
+                        className="mt-4 w-full bg-blue-500 text-white py-2 rounded-md hover:bg-blue-600"
+                      >
+                        Thêm vào giỏ
+                      </button>
+                    </div>
                   ))}
                 </div>
               </>
