@@ -6,74 +6,95 @@ export const OrderContext = createContext();
 
 export const OrderProvider = ({ children }) => {
   const [cart, setCart] = useState([]);
-  const [promotions, setPromotions] = useState(null); // Ví dụ: { type: "percent", value: 10 } hoặc { type: "fixed", value: 50000 }
+  const [promotions, setPromotions] = useState(null);
+  const [tempOrder, setTempOrder] = useState(null);
+  const [deliveryAddress, setDeliveryAddress] = useState({
+    recipientName: "",
+    recipientPhone: "",
+    recipientAddress: "",
+  });
+  const [selectedVoucherId, setSelectedVoucherId] = useState(null);
 
-  // Thêm sản phẩm vào giỏ hàng
-  const addToCart = (product, quantity = 1) => {
+  const addToCart = (item) => {
     setCart((prev) => {
-      const existing = prev.find((item) => item.id === product.id);
-      if (existing) {
-        return prev.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + quantity }
-            : item
+      const existingItem = prev.find((i) => i.id === item.id);
+      if (existingItem) {
+        return prev.map((i) =>
+          i.id === item.id ? { ...i, quantity: i.quantity + item.quantity } : i
         );
       }
-      return [...prev, { ...product, quantity }];
+      return [...prev, item];
     });
   };
 
-  // Tăng số lượng sản phẩm
-  const increaseQuantity = (productId) => {
+  const increaseQuantity = (id) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === productId ? { ...item, quantity: item.quantity + 1 } : item
+        item.id === id ? { ...item, quantity: item.quantity + 1 } : item
       )
     );
+    if (tempOrder && tempOrder.id === id && tempOrder.quantity < tempOrder.stock) {
+      setTempOrder((prev) => ({ ...prev, quantity: prev.quantity + 1 }));
+    }
   };
 
-  // Giảm số lượng sản phẩm
-  const decreaseQuantity = (productId) => {
+  const decreaseQuantity = (id) => {
     setCart((prev) =>
       prev.map((item) =>
-        item.id === productId && item.quantity > 1
+        item.id === id && item.quantity > 1
           ? { ...item, quantity: item.quantity - 1 }
           : item
       )
     );
+    if (tempOrder && tempOrder.id === id && tempOrder.quantity > 1) {
+      setTempOrder((prev) => ({ ...prev, quantity: prev.quantity - 1 }));
+    }
   };
 
-  // Xóa sản phẩm khỏi giỏ hàng
-  const removeFromCart = (productId) => {
-    setCart((prev) => prev.filter((item) => item.id !== productId));
+  const removeFromCart = (id) => {
+    setCart((prev) => prev.filter((item) => item.id !== id));
   };
 
-  // Xóa toàn bộ giỏ hàng
-  const clearCart = () => {
-    setCart([]);
-  };
-
-  // Áp dụng khuyến mãi
-  const applyPromotion = (promotion) => {
-    setPromotions(promotion); // Ví dụ: { type: "percent", value: 10 } hoặc { type: "fixed", value: 50000 }
-  };
-
-  // Tính tổng tiền trước khuyến mãi
   const calculateSubtotal = () => {
-    return cart.reduce((total, item) => total + item.price * item.quantity, 0);
+    if (tempOrder) {
+      return tempOrder.price * tempOrder.quantity;
+    }
+    return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
   };
 
-  // Tính tổng tiền sau khuyến mãi
-  const calculateTotal = () => {
+  const calculateDiscount = (voucher) => {
+    if (!voucher || !tempOrder) return 0;
     const subtotal = calculateSubtotal();
-    if (!promotions) return subtotal;
-    if (promotions.type === "percent") {
-      return subtotal * (1 - promotions.value / 100);
+    if (voucher.voucherType === "PERCENT" && voucher.percentDiscount) {
+      return (subtotal * voucher.percentDiscount) / 100;
+    } else if (voucher.voucherType === "VALUE" && voucher.valueDiscount) {
+      return voucher.valueDiscount;
     }
-    if (promotions.type === "fixed") {
-      return Math.max(0, subtotal - promotions.value);
-    }
-    return subtotal;
+    return 0;
+  };
+
+  const calculateTotal = (voucher) => {
+    const subtotal = calculateSubtotal();
+    const discount = calculateDiscount(voucher);
+    return Math.max(0, subtotal - discount);
+  };
+
+  const applyPromotion = (promotion) => {
+    setPromotions(promotion);
+  };
+
+  const setTempOrderItem = (item) => {
+    setTempOrder(item);
+  };
+
+  const clearTempOrder = () => {
+    setTempOrder(null);
+    setSelectedVoucherId(null);
+    setDeliveryAddress({
+      recipientName: "",
+      recipientPhone: "",
+      recipientAddress: "",
+    });
   };
 
   return (
@@ -81,14 +102,21 @@ export const OrderProvider = ({ children }) => {
       value={{
         cart,
         promotions,
+        tempOrder,
+        deliveryAddress,
+        selectedVoucherId,
         addToCart,
         increaseQuantity,
         decreaseQuantity,
         removeFromCart,
-        clearCart,
-        applyPromotion,
         calculateSubtotal,
+        calculateDiscount,
         calculateTotal,
+        applyPromotion,
+        setTempOrderItem,
+        clearTempOrder,
+        setDeliveryAddress,
+        setSelectedVoucherId,
       }}
     >
       {children}

@@ -1,35 +1,60 @@
-"use client";
+// <<<<<<< HEAD
+// "use client";
 
-import { useAuth } from "@/context/AuthContext";
-import { useProducts } from "@/hooks/useProducts";
-import ProductCard from "@/components/product/ProductCard";
+// import { useAuth } from "@/context/AuthContext";
+// import { useProducts } from "@/hooks/useProducts";
+
+// import ProductCard from "@/components/product/ProductCard";
+// import InfiniteScroll from "react-infinite-scroll-component";
+// import Link from "next/link";
+// import {
+//   FaFacebook,
+//   FaInstagram,
+//   FaTwitter,
+//   FaLinkedin,
+//   FaShoppingCart,
+//   FaBell,
+//   FaQuestionCircle,
+//   FaSearch,
+//   FaCcVisa,
+//   FaCcMastercard,
+//   FaCcJcb,
+//   FaCcPaypal,
+//   FaGooglePay,
+//   FaApplePay,
+//   FaComments,
+//   FaFileInvoice,
+// } from "react-icons/fa";
+// import { useRef, useState, useEffect } from "react";
+// import { mockConversations } from "@/data/mockData";
+// import AuthStatus from "@/components/AuthStatus";
+// import { useRouter } from 'next/navigation';
+// import Header from "@/components/Header";
+// import Footer from "@/components/Footer";
+
+// // Danh sách ảnh banner (có thể tự động lấy từ public/images/banner nếu build-time, ở đây hardcode)
+// const bannerImages = [
+//   "/images/banner/main-banner.jpg",
+//   "/images/banner/flash-sale-banner.jpg",
+//   "/images/banner/sub-banner-1.jpg",
+//   "/images/banner/sub-banner-2.jpg",
+//   "/images/banner/49601b406491a8eae318bebc541bf8ca.jpg",
+//   "/images/banner/89bf8e3eef57a1034a4786da47d79d15.jpg",
+//   "/images/banner/f5894834d664f6ca42dc6aa2d9d5bac4.jpg",
+//   "/images/banner/f9746c1ec6a7e39f232a382017e3fb55.jpg",
+// ];
+// =======
+'use client';
+
 import InfiniteScroll from "react-infinite-scroll-component";
-import Link from "next/link";
-import {
-  FaFacebook,
-  FaInstagram,
-  FaTwitter,
-  FaLinkedin,
-  FaShoppingCart,
-  FaBell,
-  FaQuestionCircle,
-  FaSearch,
-  FaCcVisa,
-  FaCcMastercard,
-  FaCcJcb,
-  FaCcPaypal,
-  FaGooglePay,
-  FaApplePay,
-  FaComments,
-  FaFileInvoice,
-} from "react-icons/fa";
-import { useRef, useState, useEffect } from "react";
+import {useRef, useEffect, useState } from 'react';
+import { useProducts } from '@/hooks/useProducts';
+import { useAuth } from '@/context/AuthContext';
+import Header from '@/components/Header';
 import { mockConversations } from "@/data/mockData";
-import AuthStatus from "@/components/AuthStatus";
-import { useRouter } from 'next/navigation';
-import Header from "@/components/Header";
-import Footer from "@/components/Footer";
-
+import Footer from '@/components/Footer';
+import ProductCard from '@/components/product/ProductCard';
+// >>>>>>> 54d0e8d (fix order)
 // Danh sách ảnh banner (có thể tự động lấy từ public/images/banner nếu build-time, ở đây hardcode)
 const bannerImages = [
   "/images/banner/main-banner.jpg",
@@ -41,7 +66,6 @@ const bannerImages = [
   "/images/banner/f5894834d664f6ca42dc6aa2d9d5bac4.jpg",
   "/images/banner/f9746c1ec6a7e39f232a382017e3fb55.jpg",
 ];
-
 export default function HomePage() {
   const { user, authState } = useAuth();
   const { products, hasMore, loadMoreProducts, loading } = useProducts(
@@ -156,84 +180,3 @@ export default function HomePage() {
     </div>
   );
 }
-
-
-
-// 'use client';
-
-// import { useEffect, useState } from 'react';
-// import { useProducts } from '@/hooks/useProducts';
-// import { useAuth } from '@/context/AuthContext';
-// import Header from '@/components/Header';
-// import Footer from '@/components/Footer';
-// import ProductCard from '@/components/product/ProductCard';
-
-// export default function HomePage() {
-//   const { authState } = useAuth();
-//   const { products, loading, error, totalProducts, loadProducts } = useProducts(0, 100, authState.token);
-//   const [hasLoaded, setHasLoaded] = useState(false);
-
-//   useEffect(() => {
-//     if (authState.isAuthenticated && authState.token && !authState.isLoading && !hasLoaded) {
-//       console.log('Calling loadProducts, token:', authState.token);
-//       loadProducts();
-//       setHasLoaded(true);
-//     }
-//   }, [authState.isAuthenticated, authState.token, authState.isLoading, hasLoaded, loadProducts]);
-
-//   return (
-//     <div className="flex flex-col min-h-screen bg-gray-100">
-//       <Header />
-
-//       {/* Banner Section */}
-//       <div className="container mx-auto px-4 py-4" suppressHydrationWarning>
-//         <div className="grid grid-cols-12 gap-4" suppressHydrationWarning>
-//           <div className="col-span-8" suppressHydrationWarning>
-//             <img
-//               src="/images/banner/main-banner.jpg"
-//               alt="Main Banner"
-//               className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity"
-//             />
-//           </div>
-//           <div className="col-span-4 space-y-4" suppressHydrationWarning>
-//             <img
-//               src="/images/banner/food-banner.jpg"
-//               alt="Food Banner"
-//               className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity"
-//             />
-//             <img
-//               src="/images/banner/youtube-banner.jpg"
-//               alt="YouTube Banner"
-//               className="w-full rounded-sm shadow-md hover:opacity-90 transition-opacity"
-//             />
-//           </div>
-//         </div>
-//       </div>
-
-//       <main className="container mx-auto px-4 py-8 flex-grow">
-//         <h1 className="text-2xl font-bold text-gray-700 mb-6">Sản phẩm nổi bật</h1>
-
-//         {loading && <p className="text-center text-gray-500">Đang tải...</p>}
-//         {error && <p className="text-center text-red-500">{error}</p>}
-
-//         {!loading && !error && products.length === 0 && (
-//           <p className="text-center text-gray-500">Không tìm thấy sản phẩm nào.</p>
-//         )}
-
-//         {!loading && !error && products.length > 0 && (
-//           <>
-//             <div className="mb-4 text-gray-600">
-//               Tìm thấy {totalProducts} sản phẩm
-//             </div>
-//             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-//               {products.map((product) => (
-//                 <ProductCard key={product.id} product={product} />
-//               ))}
-//             </div>
-//           </>
-//         )}
-//       </main>
-//       <Footer />
-//     </div>
-//   );
-// }
